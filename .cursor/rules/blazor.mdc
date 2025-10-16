@@ -1,0 +1,35 @@
+---
+description: Guidelines for Blazor development
+globs: *.razor
+alwaysApply: false
+---
+### Guidelines for Blazor
+
+**Architecture**
+- Extract business logic into services in `Services/` (FantasyCoachAI.Application)
+- Register services in Program.cs with appropriate lifetime
+- Use dependency injection for service access
+
+**Components**
+- Use component lifecycle: OnInitialized, OnParametersSet, OnAfterRender
+- Use `[Parameter]` for inputs, implement IDisposable when needed
+- Use CSS isolation with `.razor.css` files
+
+**Data & State**
+- Use `@bind` for two-way binding
+- Use cascading parameters for shared data
+- Call `StateHasChanged()` only when necessary
+
+**Forms**
+- Use `EditForm` with data annotations validation
+- Show validation with `ValidationSummary` and `ValidationMessage`
+
+**HTTP & APIs**
+- Inject `HttpClient`, handle loading/error states explicitly
+- Use typed HttpClient clients when possible
+
+**Best Practices**
+- Keep components focused on presentation
+- Avoid JS interop unless necessary
+- Dispose event handlers and subscriptions properly
+- Store settings in appsettings.json

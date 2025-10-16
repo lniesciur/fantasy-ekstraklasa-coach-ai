@@ -1,0 +1,64 @@
+---
+description: Backend development guidelines for .NET 8 Fantasy Coach AI application
+globs: src/FantasyCoachAI.Application/**/*.cs,src/FantasyCoachAI.Domain/**/*.cs,src/FantasyCoachAI.Infrastructure/**/*.cs,src/FantasyCoachAI.Web/Program.cs
+alwaysApply: false
+---
+
+### Backend Architecture (.NET 8)
+
+**Clean Architecture Layers**
+- Domain: Core business entities and interfaces (no dependencies)
+- Application: Business logic, services, DTOs, and use cases
+- Infrastructure: Data access, external services, and implementations
+- Web: Presentation layer with Blazor Server components
+
+**Dependency Injection**
+- Register services in appropriate layers using extension methods
+- Use Scoped lifetime for repositories and services
+- Use Singleton for configuration and Supabase client
+- Always validate configuration in Infrastructure DI
+
+**Supabase Integration**
+- Use Supabase.Client as Scoped service, not Singleton
+- Always call `await _supabase.InitializeAsync()` before operations
+- Use proper Supabase Postgrest attributes for models
+- Implement Row Level Security (RLS) policies in database
+- Use typed models with BaseModel inheritance
+
+**Repository Pattern**
+- Implement interfaces in Domain layer
+- Use async/await for all database operations
+- Handle exceptions gracefully with proper error messages
+- Use mappers to convert between domain and database models
+- Implement filtering and pagination in repository methods
+
+**Service Layer**
+- Keep business logic in Application services
+- Validate input parameters and throw meaningful exceptions
+- Use DTOs for data transfer between layers
+- Implement proper error handling and validation
+- Keep services focused on single responsibility
+
+**Configuration**
+- Store Supabase settings in appsettings.json
+- Use strongly-typed configuration classes
+- Validate required settings in DI registration
+- Use environment-specific configuration files
+
+**Error Handling**
+- Use ArgumentException for invalid parameters
+- Use InvalidOperationException for business rule violations
+- Implement proper exception handling in repositories
+- Log errors appropriately with structured logging
+
+**Database Models**
+- Use Supabase Postgrest attributes (Table, Column, PrimaryKey)
+- Inherit from BaseModel for Supabase compatibility
+- Use proper data types and constraints
+- Implement proper mapping between domain and database models
+
+**Health Checks**
+- Implement health check endpoints for monitoring
+- Test Supabase connectivity in health checks
+- Return proper HTTP status codes (200 for healthy, 503 for unhealthy)
+- Include timestamp and service status in responses
