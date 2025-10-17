@@ -4,9 +4,6 @@ using FantasyCoachAI.Domain.Entities;
 using FantasyCoachAI.Domain.Enums;
 using FantasyCoachAI.Domain.Interfaces;
 using FantasyCoachAI.Domain.Exceptions;
-using FluentAssertions;
-using Moq;
-using Xunit;
 
 namespace FantasyCoachAI.Application.Tests.Services
 {
@@ -78,51 +75,6 @@ namespace FantasyCoachAI.Application.Tests.Services
             result[0].Number.Should().Be(15);
             result[0].Status.Should().Be(GameweekStatus.Current);
             _mockGameweekRepository.Verify(x => x.GetFilteredAsync(filter.Status, filter.Sort, false), Times.Once);
-        }
-
-        #endregion
-
-        #region GetCurrentGameweekAsync Tests
-
-        [Fact]
-        public async Task GetCurrentGameweekAsync_WhenCurrentGameweekExists_ShouldReturnGameweekDto()
-        {
-            // Arrange
-            var currentGameweek = new Gameweek
-            {
-                Id = 5,
-                Number = 10,
-                StartDate = DateTime.UtcNow.AddDays(-1),
-                EndDate = DateTime.UtcNow.AddDays(1)
-            };
-
-            _mockGameweekRepository.Setup(x => x.GetCurrentAsync())
-                .ReturnsAsync(currentGameweek);
-
-            // Act
-            var result = await _gameweekService.GetCurrentGameweekAsync();
-
-            // Assert
-            result.Should().NotBeNull();
-            result!.Id.Should().Be(5);
-            result.Number.Should().Be(10);
-            result.Status.Should().Be(GameweekStatus.Current);
-            _mockGameweekRepository.Verify(x => x.GetCurrentAsync(), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetCurrentGameweekAsync_WhenNoCurrentGameweek_ShouldReturnNull()
-        {
-            // Arrange
-            _mockGameweekRepository.Setup(x => x.GetCurrentAsync())
-                .ReturnsAsync((Gameweek?)null);
-
-            // Act
-            var result = await _gameweekService.GetCurrentGameweekAsync();
-
-            // Assert
-            result.Should().BeNull();
-            _mockGameweekRepository.Verify(x => x.GetCurrentAsync(), Times.Once);
         }
 
         #endregion

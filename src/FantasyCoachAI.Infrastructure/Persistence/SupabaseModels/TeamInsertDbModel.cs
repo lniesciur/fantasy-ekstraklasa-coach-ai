@@ -1,15 +1,11 @@
-﻿using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
 {
     [Table("teams")]
-    public class TeamDbModel : BaseModel
+    public class TeamInsertDbModel : BaseModel
     {
-        [PrimaryKey("id", true)]
-        [Column("id")]
-        public int Id { get; set; }
-
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 

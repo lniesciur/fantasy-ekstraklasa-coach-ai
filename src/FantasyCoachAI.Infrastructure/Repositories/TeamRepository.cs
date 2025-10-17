@@ -2,6 +2,7 @@
 using FantasyCoachAI.Domain.Interfaces;
 using FantasyCoachAI.Infrastructure.Mappers;
 using FantasyCoachAI.Infrastructure.Persistence.SupabaseModels;
+using Supabase.Postgrest;
 using static Supabase.Postgrest.Constants;
 
 namespace FantasyCoachAI.Infrastructure.Repositories
@@ -50,13 +51,20 @@ namespace FantasyCoachAI.Infrastructure.Repositories
                 team.IsActive = true;
             }
 
-            var dbModel = team.ToDbModel();
+            var insertDbModel = team.ToInsertDbModel();
 
-            var response = await _supabase
+            // Insertuj używając modelu bez PrimaryKey
+            await _supabase
+                .From<TeamInsertDbModel>()
+                .Insert(insertDbModel);
+
+            // Pobierz dodany rekord używając pełnego modelu (PostgREST bug workaround)
+            var addedRecord = await _supabase
                 .From<TeamDbModel>()
-                .Insert(dbModel);
+                .Where(t => t.Name == team.Name && t.ShortCode == team.ShortCode)
+                .Single();
 
-            return response.Models.First().ToDomain();
+            return addedRecord?.ToDomain() ?? throw new InvalidOperationException("Failed to retrieve inserted team record");
         }
 
         public async Task UpdateAsync(Team team)

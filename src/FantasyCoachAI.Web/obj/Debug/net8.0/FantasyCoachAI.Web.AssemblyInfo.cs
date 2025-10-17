@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FantasyCoachAI.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3bc6a8f25f36aaac1dc2ac226158061d72481cc1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c0d7ad802957c06c9e36510ce12d4256a376e5a8")]
 [assembly: System.Reflection.AssemblyProductAttribute("FantasyCoachAI.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FantasyCoachAI.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

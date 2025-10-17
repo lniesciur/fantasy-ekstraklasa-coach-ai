@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using FantasyCoachAI.Application.Interfaces;
 using FantasyCoachAI.Application.DTOs;
 using FantasyCoachAI.Domain.Exceptions;
+using FantasyCoachAI.Web.Filters;
 
 namespace FantasyCoachAI.Web.Controllers;
 
@@ -20,24 +21,22 @@ public class TeamsController : ControllerBase
     /// List all teams with optional filtering and sorting
     /// </summary>
     [HttpGet]
+    [AutoValidate]
     public async Task<IActionResult> GetTeams(
         [FromQuery] string? sort = "name",
         [FromQuery] string? order = "asc",
-        [FromQuery] bool? isActive = true)
+        [FromQuery] bool? isActive = true,
+        [FromQuery] string? shortCode = null)
     {
-        // Validate query params
-        if (!new[] { "name", "shortcode" }.Contains(sort?.ToLower()))
-            return BadRequest("Invalid sort parameter. Valid values: name, shortcode");
-
-        if (!new[] { "asc", "desc" }.Contains(order?.ToLower()))
-            return BadRequest("Invalid order parameter. Valid values: asc, desc");
-
-        var teams = await _teamService.GetTeamsAsync(new TeamFilterDto
+        var filter = new TeamFilterDto
         {
             Sort = sort,
             Order = order,
-            IsActive = isActive
-        });
+            IsActive = isActive,
+            ShortCode = shortCode
+        };
+
+        var teams = await _teamService.GetTeamsAsync(filter);
 
         return Ok(new
         {
@@ -66,11 +65,9 @@ public class TeamsController : ControllerBase
     /// Create new team
     /// </summary>
     [HttpPost]
+    [AutoValidate]
     public async Task<IActionResult> CreateTeam([FromBody] CreateTeamCommand createTeamCommand)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var createdTeam = await _teamService.CreateAsync(createTeamCommand);
         return CreatedAtAction(nameof(GetTeam), new { id = createdTeam.Id }, createdTeam);
     }
@@ -79,13 +76,10 @@ public class TeamsController : ControllerBase
     /// Update existing team
     /// </summary>
     [HttpPut("{id:int}")]
+    [AutoValidate]
     public async Task<IActionResult> UpdateTeam(int id, [FromBody] UpdateTeamCommand updateTeamCommand)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        if (id != updateTeamCommand.Id)
-            throw new ArgumentException("ID mismatch");
+        updateTeamCommand.Id = id;
 
         var updatedTeam = await _teamService.UpdateAsync(updateTeamCommand);
         return Ok(updatedTeam);

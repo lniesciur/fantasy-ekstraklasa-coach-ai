@@ -1,10 +1,19 @@
-﻿namespace FantasyCoachAI.Domain.Enums
+﻿using System.ComponentModel;
+
+namespace FantasyCoachAI.Domain.Enums
 {
     public enum Position
     {
-        GK,  // Goalkeeper
-        DEF, // Defender
-        MID, // Midfielder
-        FWD  // Forward
+        [Description("Bramkarz")]
+        GK,
+
+        [Description("Obrońca")]
+        DEF,
+
+        [Description("Pomocnik")]
+        MID,
+
+        [Description("Napastnik")]
+        FWD
     }
 }

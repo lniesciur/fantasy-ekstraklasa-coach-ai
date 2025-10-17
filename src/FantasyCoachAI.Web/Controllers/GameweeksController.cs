@@ -3,7 +3,7 @@ using FantasyCoachAI.Application.Interfaces;
 using FantasyCoachAI.Application.DTOs;
 using FantasyCoachAI.Domain.Enums;
 using FantasyCoachAI.Domain.Exceptions;
-using System.ComponentModel.DataAnnotations;
+using FantasyCoachAI.Web.Filters;
 
 namespace FantasyCoachAI.Web.Controllers;
 
@@ -22,58 +22,28 @@ public class GameweeksController : ControllerBase
     /// List all gameweeks with optional filtering and sorting
     /// </summary>
     [HttpGet]
+    [AutoValidate]
     public async Task<IActionResult> GetGameweeks(
         [FromQuery] string? status = null,
         [FromQuery] string? sort = "number",
         [FromQuery] string? order = "asc")
     {
-        // Validate query params
-        if (!new[] { "upcoming", "current", "completed" }.Contains(status?.ToLower()))
-            return BadRequest("Invalid status parameter");
-
-        if (!new[] { "number", "start_date" }.Contains(sort?.ToLower()))
-            return BadRequest("Invalid sort parameter");
-
-        if (!new[] { "asc", "desc" }.Contains(order?.ToLower()))
-            return BadRequest("Invalid order parameter");
-
-        GameweekStatus? gameweekStatus = null;
-        if (!string.IsNullOrEmpty(status) && Enum.TryParse<GameweekStatus>(status, true, out var parsedStatus))
+        var filter = new GameweekFilterDto
         {
-            gameweekStatus = parsedStatus;
-        }
-
-        var gameweeks = await _gameweekService.GetGameweeksAsync(new GameweekFilterDto
-        {
-            Status = gameweekStatus,
+            Status = !string.IsNullOrEmpty(status) && Enum.TryParse<GameweekStatus>(status, true, out var parsedStatus) 
+                ? parsedStatus 
+                : null,
             Sort = sort,
             Order = order
-        });
+        };
+
+        var gameweeks = await _gameweekService.GetGameweeksAsync(filter);
 
         return Ok(new 
         { 
             data = gameweeks,
             total = gameweeks?.Count ?? 0 
         });
-    }
-
-    /// <summary>
-    /// Get current active gameweek
-    /// </summary>
-    [HttpGet("current")]
-    public async Task<IActionResult> GetCurrentGameweek()
-    {
-        // Get all gameweeks and find the current one
-        var gameweeks = await _gameweekService.GetGameweeksAsync(new GameweekFilterDto
-        {
-            Status = GameweekStatus.Current
-        });
-
-        var gameweek = gameweeks?.FirstOrDefault();
-        if (gameweek == null)
-            throw new NotFoundException("No active gameweek");
-
-        return Ok(gameweek);
     }
 
     /// <summary>
@@ -93,27 +63,20 @@ public class GameweeksController : ControllerBase
     /// Create new gameweek
     /// </summary>
     [HttpPost]
+    [AutoValidate]
     public async Task<IActionResult> CreateGameweek([FromBody] CreateGameweekCommand createGameweekCommand)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var createdGameweek = await _gameweekService.CreateAsync(createGameweekCommand);
         return CreatedAtAction(nameof(GetGameweek), new { id = createdGameweek.Id }, createdGameweek);
     }
 
     /// <summary>
-    /// Update existing gameweek
+    /// Delete a gameweek
     /// </summary>
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateGameweek(int id, [FromBody] UpdateGameweekCommand updateGameweekCommand)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteGameweek(int id)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        updateGameweekCommand.Id = id;
-
-        var updatedGameweek = await _gameweekService.UpdateAsync(updateGameweekCommand);
-        return Ok(updatedGameweek);
+        await _gameweekService.DeleteAsync(id);
+        return NoContent();
     }
 }

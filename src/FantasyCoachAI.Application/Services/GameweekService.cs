@@ -64,13 +64,6 @@ namespace FantasyCoachAI.Application.Services
             return dto;
         }
 
-        // New method to get current gameweek
-        public async Task<GameweekDto?> GetCurrentGameweekAsync()
-        {
-            var gameweek = await _gameweekRepository.GetCurrentAsync();
-            return gameweek != null ? MapToDto(gameweek) : null;
-        }
-
         public async Task<GameweekDto> CreateAsync(CreateGameweekCommand command)
         {
             if (command == null)
@@ -102,42 +95,26 @@ namespace FantasyCoachAI.Application.Services
             return await CreateAsync(command);
         }
 
-        public async Task<GameweekDto> UpdateAsync(UpdateGameweekCommand command)
+        public async Task DeleteAsync(int id)
         {
-            if (command == null)
-                throw new ArgumentNullException(nameof(command));
-
-            if (command.Id <= 0)
-                throw new ArgumentException("Id must be greater than zero", nameof(command));
-
-            ValidateGameweekCommand(command.Number, command.StartDate, command.EndDate);
+            if (id <= 0)
+                throw new ArgumentException("Id must be greater than zero", nameof(id));
 
             // Check if gameweek exists
-            var existingGameweek = await _gameweekRepository.GetByIdAsync(command.Id);
+            var existingGameweek = await _gameweekRepository.GetByIdAsync(id);
             if (existingGameweek == null)
             {
-                throw new NotFoundException($"Gameweek with ID {command.Id} not found");
+                throw new NotFoundException($"Gameweek with ID {id} not found");
             }
 
-            // Check if number is unique (excluding current gameweek)
-            var allGameweeks = await _gameweekRepository.GetAllAsync();
-            if (allGameweeks.Any(g => g.Number == command.Number && g.Id != command.Id))
+            // Check if gameweek has associated matches
+            var matches = await _matchRepository.GetByGameweekIdAsync(id);
+            if (matches.Any())
             {
-                throw new InvalidOperationException($"Gameweek with number {command.Number} already exists");
+                throw new InvalidOperationException($"Cannot delete gameweek with ID {id} because it has associated matches. Please delete matches first.");
             }
 
-            existingGameweek.Number = command.Number;
-            existingGameweek.StartDate = command.StartDate;
-            existingGameweek.EndDate = command.EndDate;
-
-            await _gameweekRepository.UpdateAsync(existingGameweek);
-            return MapToDto(existingGameweek);
-        }
-
-        // Alias for UpdateAsync to maintain compatibility with tests
-        public async Task<GameweekDto> UpdateGameweekAsync(UpdateGameweekCommand command)
-        {
-            return await UpdateAsync(command);
+            await _gameweekRepository.DeleteAsync(id);
         }
 
         private static void ValidateGameweekCommand(int number, DateTime startDate, DateTime endDate)

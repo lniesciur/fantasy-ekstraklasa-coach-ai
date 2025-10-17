@@ -69,13 +69,20 @@ namespace FantasyCoachAI.Infrastructure.Repositories
 
             await _supabase.InitializeAsync();
 
-            var dbModel = gameweek.ToDbModel();
+            var insertDbModel = gameweek.ToInsertDbModel();
 
-            var response = await _supabase
+            // Insertuj używając modelu bez PrimaryKey
+            await _supabase
+                .From<GameweekInsertDbModel>()
+                .Insert(insertDbModel);
+
+            // Pobierz dodany rekord używając pełnego modelu (PostgREST bug workaround)
+            var addedRecord = await _supabase
                 .From<GameweekDbModel>()
-                .Insert(dbModel);
+                .Where(g => g.Number == gameweek.Number)
+                .Single();
 
-            return response.Models.First().ToDomain();
+            return addedRecord?.ToDomain() ?? throw new InvalidOperationException("Failed to retrieve inserted gameweek record");
         }
 
         public async Task UpdateAsync(Gameweek gameweek)
@@ -93,6 +100,19 @@ namespace FantasyCoachAI.Infrastructure.Repositories
 
             var dbModel = gameweek.ToDbModel();
             await _supabase.From<GameweekDbModel>().Update(dbModel);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Id must be greater than zero", nameof(id));
+
+            await _supabase.InitializeAsync();
+
+            await _supabase
+                .From<GameweekDbModel>()
+                .Where(g => g.Id == id)
+                .Delete();
         }
 
         public async Task<List<Gameweek>> GetFilteredAsync(

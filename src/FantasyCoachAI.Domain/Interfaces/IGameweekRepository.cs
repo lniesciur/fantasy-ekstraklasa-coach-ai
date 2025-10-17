@@ -10,9 +10,10 @@ namespace FantasyCoachAI.Domain.Interfaces
         Task<Gameweek?> GetCurrentAsync();
         Task<Gameweek> CreateAsync(Gameweek gameweek);
         Task UpdateAsync(Gameweek gameweek);
+        Task DeleteAsync(int id);
         Task<List<Gameweek>> GetFilteredAsync(
-            GameweekStatus? status = null, 
-            string? sortBy = "number", 
+            GameweekStatus? status = null,
+            string? sortBy = "number",
             bool ascending = true);
     }
 }

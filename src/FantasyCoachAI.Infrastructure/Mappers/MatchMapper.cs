@@ -31,13 +31,41 @@ namespace FantasyCoachAI.Infrastructure.Mappers
         }
 
         /// <summary>
-        /// Mapuje z encji domenowej do modelu bazodanowego
+        /// Mapuje z encji domenowej do modelu bazodanowego (do odczytu i aktualizacji)
         /// </summary>
         public static MatchDbModel ToDbModel(this Match domain)
         {
-            return new MatchDbModel
+            var dbModel = new MatchDbModel
             {
-                Id = domain.Id,
+                GameweekId = domain.GameweekId,
+                HomeTeamId = domain.HomeTeamId,
+                AwayTeamId = domain.AwayTeamId,
+                MatchDate = domain.MatchDate,
+                Status = MapStatusToDb(domain.Status),
+                HomeScore = domain.HomeScore,
+                AwayScore = domain.AwayScore,
+                RescheduleReason = domain.RescheduleReason,
+                CreatedAt = domain.CreatedAt,
+                UpdatedAt = domain.UpdatedAt
+            };
+
+            // Tylko ustaw ID jeśli jest większe od 0 (dla aktualizacji)
+            // Dla nowych rekordów (ID = 0) pozwól bazie danych wygenerować ID
+            if (domain.Id > 0)
+            {
+                dbModel.Id = domain.Id;
+            }
+
+            return dbModel;
+        }
+
+        /// <summary>
+        /// Mapuje z encji domenowej do modelu bazodanowego do insertu (bez ID)
+        /// </summary>
+        public static MatchInsertDbModel ToInsertDbModel(this Match domain)
+        {
+            return new MatchInsertDbModel
+            {
                 GameweekId = domain.GameweekId,
                 HomeTeamId = domain.HomeTeamId,
                 AwayTeamId = domain.AwayTeamId,

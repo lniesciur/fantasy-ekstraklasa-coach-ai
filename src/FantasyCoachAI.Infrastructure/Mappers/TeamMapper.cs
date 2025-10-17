@@ -21,13 +21,35 @@ namespace FantasyCoachAI.Infrastructure.Mappers
         }
 
         /// <summary>
-        /// Mapuje z encji domenowej do modelu bazodanowego
+        /// Mapuje z encji domenowej do modelu bazodanowego (do odczytu i aktualizacji)
         /// </summary>
         public static TeamDbModel ToDbModel(this Team domain)
         {
-            return new TeamDbModel
+            var dbModel = new TeamDbModel
             {
-                Id = domain.Id,
+                Name = domain.Name,
+                ShortCode = domain.ShortCode,
+                CrestUrl = domain.CrestUrl,
+                IsActive = domain.IsActive
+            };
+
+            // Tylko ustaw ID jeśli jest większe od 0 (dla aktualizacji)
+            // Dla nowych rekordów (ID = 0) pozwól bazie danych wygenerować ID
+            if (domain.Id > 0)
+            {
+                dbModel.Id = domain.Id;
+            }
+
+            return dbModel;
+        }
+
+        /// <summary>
+        /// Mapuje z encji domenowej do modelu bazodanowego do insertu (bez ID)
+        /// </summary>
+        public static TeamInsertDbModel ToInsertDbModel(this Team domain)
+        {
+            return new TeamInsertDbModel
+            {
                 Name = domain.Name,
                 ShortCode = domain.ShortCode,
                 CrestUrl = domain.CrestUrl,

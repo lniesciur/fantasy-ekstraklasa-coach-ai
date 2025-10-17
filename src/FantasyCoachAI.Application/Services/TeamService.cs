@@ -82,35 +82,11 @@ namespace FantasyCoachAI.Application.Services
 
         public async Task<TeamDto> UpdateAsync(UpdateTeamCommand command)
         {
-            if (command == null)
-                throw new ArgumentNullException(nameof(command));
-
-            if (command.Id <= 0)
-                throw new ArgumentException("ID must be greater than 0");
-
-            if (string.IsNullOrWhiteSpace(command.Name))
-                throw new ArgumentException("Name is required");
-
-            if (string.IsNullOrWhiteSpace(command.ShortCode))
-                throw new ArgumentException("ShortCode is required");
-
             var existingTeam = await _teamRepository.GetByIdAsync(command.Id);
             if (existingTeam == null)
                 throw new NotFoundException($"Team with ID {command.Id} not found");
 
-            // Check uniqueness (excluding current)
-            var allTeams = await _teamRepository.GetAllAsync();
-            if (allTeams.Any(t => t.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase) && t.Id != command.Id))
-                throw new InvalidOperationException($"A team named '{command.Name}' already exists");
-
-            if (allTeams.Any(t => t.ShortCode == command.ShortCode && t.Id != command.Id))
-                throw new InvalidOperationException($"Short code '{command.ShortCode}' already exists");
-
-            // Apply updates
-            existingTeam.Name = command.Name;
-            existingTeam.ShortCode = command.ShortCode;
-            existingTeam.CrestUrl = command.CrestUrl;
-            existingTeam.IsActive = command.IsActive ?? existingTeam.IsActive;
+            existingTeam.IsActive = command.IsActive;
 
             await _teamRepository.UpdateAsync(existingTeam);
             return MapToDto(existingTeam);

@@ -14,7 +14,7 @@ namespace FantasyCoachAI.Application
             services.AddScoped<IGameweekService, GameweekService>();
             services.AddScoped<IMatchService, MatchService>();
 
-            services.AddValidatorsFromAssemblyContaining<CreateMatchCommandValidator>();
+            services.AddValidatorsFromAssemblyContaining<TeamService>();
 
             return services;
         }

@@ -4,12 +4,8 @@ using Supabase.Postgrest.Models;
 namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
 {
     [Table("matches")]
-    public class MatchDbModel : BaseModel
+    public class MatchInsertDbModel : BaseModel
     {
-        [PrimaryKey("id", true)]
-        [Column("id")]
-        public int Id { get; set; }
-
         [Column("gameweek_id")]
         public int GameweekId { get; set; }
 
@@ -39,10 +35,5 @@ namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
 
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
-
-        // Navigation properties for joins
-        public GameweekDbModel? Gameweek { get; set; }
-        public TeamDbModel? HomeTeam { get; set; }
-        public TeamDbModel? AwayTeam { get; set; }
     }
 }

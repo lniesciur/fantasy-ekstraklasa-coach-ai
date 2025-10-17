@@ -179,59 +179,10 @@ namespace FantasyCoachAI.Application.Tests.Services
         #region UpdateAsync Tests
 
         [Fact]
-        public async Task UpdateAsync_WhenTeamIsValid_ShouldUpdateTeam()
-        {
-            // Arrange
-            var teamToUpdateCommand = new UpdateTeamCommand { Id = 1, Name = "Updated Team", ShortCode = "UT", IsActive = true };
-            var existingTeam = new Team { Id = 1, Name = "Original Team", ShortCode = "OT", IsActive = true };
-            var allTeams = new List<Team> { existingTeam };
-
-            _mockTeamRepository.Setup(x => x.GetByIdAsync(teamToUpdateCommand.Id))
-                .ReturnsAsync(existingTeam);
-            _mockTeamRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(allTeams);
-
-            // Act
-            var result = await _teamService.UpdateAsync(teamToUpdateCommand);
-
-            // Assert
-            result.Should().BeEquivalentTo(existingTeam);
-            _mockTeamRepository.Verify(x => x.GetByIdAsync(teamToUpdateCommand.Id), Times.Once);
-            _mockTeamRepository.Verify(x => x.UpdateAsync(existingTeam), Times.Once);
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task UpdateAsync_WhenIdIsInvalid_ShouldThrowArgumentException(int invalidId)
-        {
-            // Arrange
-            var teamToUpdateCommand = new UpdateTeamCommand { Id = invalidId, Name = "Test Team" };
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _teamService.UpdateAsync(teamToUpdateCommand));
-            exception.Message.Should().Be("ID must be greater than 0");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task UpdateAsync_WhenNameIsNullOrEmpty_ShouldThrowArgumentException(string? invalidName)
-        {
-            // Arrange
-            var teamToUpdateCommand = new UpdateTeamCommand { Id = 1, Name = invalidName! };
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _teamService.UpdateAsync(teamToUpdateCommand));
-            exception.Message.Should().Be("Name is required");
-        }
-
-        [Fact]
         public async Task UpdateAsync_WhenTeamNotFound_ShouldThrowNotFoundException()
         {
             // Arrange
-            var teamToUpdateCommand = new UpdateTeamCommand { Id = 999, Name = "Non-existent Team", ShortCode = "NET" };
+            var teamToUpdateCommand = new UpdateTeamCommand { Id = 999 };
 
             _mockTeamRepository.Setup(x => x.GetByIdAsync(teamToUpdateCommand.Id))
                 .ReturnsAsync((Team?)null);

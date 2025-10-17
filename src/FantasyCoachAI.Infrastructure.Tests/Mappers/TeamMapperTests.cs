@@ -109,6 +109,54 @@ namespace FantasyCoachAI.Infrastructure.Tests.Mappers
         }
 
         [Fact]
+        public void ToInsertDbModel_WhenMappingFromDomainEntity_ShouldMapAllPropertiesExceptId()
+        {
+            // Arrange
+            var domainEntity = new Team
+            {
+                Id = 1, // This should be ignored for inserts
+                Name = "Newcastle United",
+                ShortCode = "NEW",
+                CrestUrl = "https://example.com/newcastle-crest.png",
+                IsActive = true
+            };
+
+            // Act
+            var insertDbModel = domainEntity.ToInsertDbModel();
+
+            // Assert
+            insertDbModel.Should().NotBeNull();
+            insertDbModel.Name.Should().Be(domainEntity.Name);
+            insertDbModel.ShortCode.Should().Be(domainEntity.ShortCode);
+            insertDbModel.CrestUrl.Should().Be(domainEntity.CrestUrl);
+            insertDbModel.IsActive.Should().Be(domainEntity.IsActive);
+        }
+
+        [Fact]
+        public void ToInsertDbModel_WhenMappingFromDomainEntityWithNulls_ShouldMapCorrectly()
+        {
+            // Arrange
+            var domainEntity = new Team
+            {
+                Id = 10, // This should be ignored for inserts
+                Name = "Insert Test Team",
+                ShortCode = null,
+                CrestUrl = null,
+                IsActive = false
+            };
+
+            // Act
+            var insertDbModel = domainEntity.ToInsertDbModel();
+
+            // Assert
+            insertDbModel.Should().NotBeNull();
+            insertDbModel.Name.Should().Be("Insert Test Team");
+            insertDbModel.ShortCode.Should().BeNull();
+            insertDbModel.CrestUrl.Should().BeNull();
+            insertDbModel.IsActive.Should().BeFalse();
+        }
+
+        [Fact]
         public void MapperRoundTrip_WhenMappingBackAndForth_ShouldPreserveData()
         {
             // Arrange

@@ -323,37 +323,6 @@ Get detailed player information
 ```
 - **Errors:** 401 (Unauthorized), 404 (Player not found)
 
-#### POST /api/players/compare
-Compare multiple players
-- **Request Body:**
-```json
-{
-  "player_ids": [1, 2, 3]
-}
-```
-- **Response (200):**
-```json
-{
-  "players": [
-    {
-      "id": 1,
-      "name": "Player A",
-      "comparison_stats": {
-        "price": 4.1,
-        "form": 9.2,
-        "fantasy_points": 125
-      }
-    }
-  ],
-  "comparison_matrix": {
-    "best_price": 2,
-    "best_form": 1,
-    "best_points": 1
-  }
-}
-```
-- **Errors:** 400 (Invalid player IDs), 401 (Unauthorized)
-
 #### POST /api/players
 Create new player
 - **Request Body:**

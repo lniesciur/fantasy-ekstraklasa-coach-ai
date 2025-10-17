@@ -3,7 +3,7 @@ using FantasyCoachAI.Application.Interfaces;
 using FantasyCoachAI.Application.DTOs;
 using FantasyCoachAI.Domain.Enums;
 using FantasyCoachAI.Domain.Exceptions;
-using System.ComponentModel.DataAnnotations;
+using FantasyCoachAI.Web.Filters;
 
 namespace FantasyCoachAI.Web.Controllers;
 
@@ -22,6 +22,7 @@ public class MatchesController : ControllerBase
     /// List matches with filtering, sorting, and pagination
     /// </summary>
     [HttpGet]
+    [AutoValidate]
     public async Task<IActionResult> GetMatches(
         [FromQuery] int? gameweekId = null,
         [FromQuery] int? teamId = null,
@@ -33,30 +34,13 @@ public class MatchesController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int limit = 50)
     {
-        // Validate query params
-        if (limit > 100)
-            limit = 100;
-
-        if (!new[] { "scheduled", "postponed", "cancelled", "played" }.Contains(status?.ToLower()))
-            return BadRequest("Invalid status parameter");
-
-        if (!new[] { "match_date", "gameweek_number" }.Contains(sort?.ToLower()))
-            return BadRequest("Invalid sort parameter");
-
-        if (!new[] { "asc", "desc" }.Contains(order?.ToLower()))
-            return BadRequest("Invalid order parameter");
-
-        MatchStatus? matchStatus = null;
-        if (!string.IsNullOrEmpty(status) && Enum.TryParse<MatchStatus>(status, true, out var parsedStatus))
-        {
-            matchStatus = parsedStatus;
-        }
-
         var filter = new MatchFilterDto
         {
             GameweekId = gameweekId,
             TeamId = teamId,
-            Status = matchStatus,
+            Status = !string.IsNullOrEmpty(status) && Enum.TryParse<MatchStatus>(status, true, out var parsedStatus) 
+                ? parsedStatus 
+                : null,
             DateFrom = dateFrom,
             DateTo = dateTo,
             Sort = sort,
@@ -97,11 +81,9 @@ public class MatchesController : ControllerBase
     /// Create new match
     /// </summary>
     [HttpPost]
+    [AutoValidate]
     public async Task<IActionResult> CreateMatch([FromBody] CreateMatchCommand createMatchCommand)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var createdMatch = await _matchService.CreateAsync(createMatchCommand);
         return CreatedAtAction(nameof(GetMatch), new { id = createdMatch.Id }, createdMatch);
     }
@@ -110,11 +92,9 @@ public class MatchesController : ControllerBase
     /// Update existing match
     /// </summary>
     [HttpPut("{id:int}")]
+    [AutoValidate]
     public async Task<IActionResult> UpdateMatch(int id, [FromBody] UpdateMatchCommand updateMatchCommand)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         updateMatchCommand.Id = id;
 
         var updatedMatch = await _matchService.UpdateAsync(updateMatchCommand);

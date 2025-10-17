@@ -1,5 +1,6 @@
 using FantasyCoachAI.Web.Components;
 using FantasyCoachAI.Web.Middleware;
+using FantasyCoachAI.Web.Filters;
 using FantasyCoachAI.Infrastructure;
 using FantasyCoachAI.Application;
 using FantasyCoachAI.Application.Interfaces;
@@ -17,11 +18,16 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 // API Services
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Add global action filters
+    options.Filters.Add<AutoValidateActionFilter>();
+});
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     options.SerializerOptions.WriteIndented = true;
+    options.SerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
 // CORS for API
@@ -43,6 +49,7 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fantasy Coach AI API", Version = "v1" });
+
         // Optional: Add XML comments if enabled
         // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

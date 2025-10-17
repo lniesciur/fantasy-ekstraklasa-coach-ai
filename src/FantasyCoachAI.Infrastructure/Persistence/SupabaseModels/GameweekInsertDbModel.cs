@@ -4,12 +4,8 @@ using Supabase.Postgrest.Models;
 namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
 {
     [Table("gameweeks")]
-    public class GameweekDbModel : BaseModel
+    public class GameweekInsertDbModel : BaseModel
     {
-        [PrimaryKey("id", true)]
-        [Column("id")]
-        public int Id { get; set; }
-
         [Column("number")]
         public int Number { get; set; }
 

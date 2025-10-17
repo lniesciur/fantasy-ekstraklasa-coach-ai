@@ -51,13 +51,22 @@ namespace FantasyCoachAI.Infrastructure.Repositories
             match.CreatedAt = DateTime.UtcNow;
             match.UpdatedAt = DateTime.UtcNow;
 
-            var dbModel = match.ToDbModel();
+            var insertDbModel = match.ToInsertDbModel();
 
-            var response = await _supabase
+            // Insertuj używając modelu bez PrimaryKey
+            await _supabase
+                .From<MatchInsertDbModel>()
+                .Insert(insertDbModel);
+
+            // Pobierz dodany rekord używając pełnego modelu (PostgREST bug workaround)
+            var addedRecord = await _supabase
                 .From<MatchDbModel>()
-                .Insert(dbModel);
+                .Select("*, gameweek:gameweeks(*), home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
+                .Where(m => m.GameweekId == match.GameweekId && m.HomeTeamId == match.HomeTeamId && m.AwayTeamId == match.AwayTeamId)
+                .Order(m => m.Id, Ordering.Descending)
+                .Single();
 
-            return response.Models.First().ToDomain();
+            return addedRecord?.ToDomain() ?? throw new InvalidOperationException("Failed to retrieve inserted match record");
         }
 
         public async Task UpdateAsync(Match match)
@@ -247,6 +256,19 @@ namespace FantasyCoachAI.Infrastructure.Repositories
                 MatchStatus.Postponed => "postponed",
                 MatchStatus.Cancelled => "cancelled",
                 _ => "scheduled"
+            };
+        }
+
+        private static MatchStatus MapStatusToDomain(string dbStatus)
+        {
+            return dbStatus.ToLower() switch
+            {
+                "scheduled" => MatchStatus.Scheduled,
+                "live" => MatchStatus.Live,
+                "played" => MatchStatus.Finished,
+                "postponed" => MatchStatus.Postponed,
+                "cancelled" => MatchStatus.Cancelled,
+                _ => MatchStatus.Scheduled
             };
         }
     }
