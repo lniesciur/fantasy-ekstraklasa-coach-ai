@@ -9,6 +9,9 @@ namespace FantasyCoachAI.Domain.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
+        // Navigation properties
+        public List<Match>? Matches { get; set; }
+
         // Domain logic - calculate status based on dates
         public GameweekStatus GetStatus()
         {

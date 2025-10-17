@@ -15,7 +15,8 @@ namespace FantasyCoachAI.Infrastructure.Mappers
                 Id = dbModel.Id,
                 Number = dbModel.Number,
                 StartDate = dbModel.StartDate,
-                EndDate = dbModel.EndDate
+                EndDate = dbModel.EndDate,
+                Matches = dbModel.Matches?.Select(m => m.ToDomain()).ToList()
             };
         }
 

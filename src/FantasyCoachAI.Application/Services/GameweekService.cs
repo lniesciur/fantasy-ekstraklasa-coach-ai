@@ -20,13 +20,28 @@ namespace FantasyCoachAI.Application.Services
         public async Task<List<GameweekDto>> GetGameweeksAsync(GameweekFilterDto? filter = null)
         {
             var gameweeks = filter != null
-                ? await _gameweekRepository.GetFilteredAsync(
+                ? await _gameweekRepository.GetFilteredWithMatchesAsync(
                     status: filter.Status,
                     sortBy: filter.Sort,
                     ascending: filter.IsAscending)
-                : await _gameweekRepository.GetAllAsync();
+                : await _gameweekRepository.GetAllWithMatchesAsync();
 
-            return gameweeks.Select(MapToDto).ToList();
+            return gameweeks.Select(gameweek =>
+            {
+                var dto = MapToDto(gameweek);
+                if (gameweek.Matches != null && gameweek.Matches.Any())
+                {
+                    var matchDtos = gameweek.Matches.Select(MapMatchToDto).ToList();
+                    dto.MatchesCount = matchDtos.Count;
+                    dto.MatchSummaries = matchDtos.Select(CreateMatchSummary).ToList();
+                }
+                else
+                {
+                    dto.MatchesCount = 0;
+                    dto.MatchSummaries = new List<string>();
+                }
+                return dto;
+            }).ToList();
         }
 
         public async Task<GameweekDto?> GetByIdAsync(int id)
@@ -59,7 +74,7 @@ namespace FantasyCoachAI.Application.Services
 
             var dto = MapToDto(gameweek);
             dto.MatchesCount = matchDtos.Count();
-            dto.Matches = matchDtos;
+            dto.MatchSummaries = matchDtos.Select(CreateMatchSummary).ToList();
 
             return dto;
         }
@@ -93,6 +108,48 @@ namespace FantasyCoachAI.Application.Services
         public async Task<GameweekDto> CreateGameweekAsync(CreateGameweekCommand command)
         {
             return await CreateAsync(command);
+        }
+
+        public async Task<GameweekDto> UpdateAsync(UpdateGameweekCommand command)
+        {
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
+
+            if (command.Id <= 0)
+                throw new ArgumentException("Id must be greater than zero", nameof(command));
+
+            ValidateGameweekCommand(command.Number, command.StartDate, command.EndDate);
+
+            // Check if gameweek exists
+            var existingGameweek = await _gameweekRepository.GetByIdAsync(command.Id);
+            if (existingGameweek == null)
+            {
+                throw new NotFoundException($"Gameweek with ID {command.Id} not found");
+            }
+
+            // Check if gameweek number already exists for a different gameweek
+            if (existingGameweek.Number != command.Number)
+            {
+                var allGameweeks = await _gameweekRepository.GetAllAsync();
+                if (allGameweeks.Any(g => g.Number == command.Number && g.Id != command.Id))
+                {
+                    throw new InvalidOperationException($"Gameweek with number {command.Number} already exists");
+                }
+            }
+
+            // Update the gameweek
+            existingGameweek.Number = command.Number;
+            existingGameweek.StartDate = command.StartDate;
+            existingGameweek.EndDate = command.EndDate;
+
+            await _gameweekRepository.UpdateAsync(existingGameweek);
+            return MapToDto(existingGameweek);
+        }
+
+        // Alias for UpdateAsync to maintain compatibility with tests
+        public async Task<GameweekDto> UpdateGameweekAsync(UpdateGameweekCommand command)
+        {
+            return await UpdateAsync(command);
         }
 
         public async Task DeleteAsync(int id)
@@ -141,9 +198,28 @@ namespace FantasyCoachAI.Application.Services
                 StartDate = gameweek.StartDate,
                 EndDate = gameweek.EndDate,
                 Status = gameweek.GetStatus(),
-                MatchesCount = 0, // Will be set in GetByIdWithMatchesAsync
-                Matches = null // Will be set in GetByIdWithMatchesAsync
+                MatchesCount = 0, // Will be populated by calling methods
+                MatchSummaries = null // Will be populated by calling methods
             };
+        }
+
+        // Helper for creating match summary string
+        private static string CreateMatchSummary(MatchDto match)
+        {
+            var homeTeamName = match.HomeTeam?.Name ?? "Unknown";
+            var awayTeamName = match.AwayTeam?.Name ?? "Unknown";
+
+            string scoreDisplay;
+            if (match.HomeScore.HasValue && match.AwayScore.HasValue)
+            {
+                scoreDisplay = $"{match.HomeScore}-{match.AwayScore}";
+            }
+            else
+            {
+                scoreDisplay = "vs";
+            }
+
+            return $"{homeTeamName} - {awayTeamName} {scoreDisplay}";
         }
 
         // Helper for mapping matches if needed

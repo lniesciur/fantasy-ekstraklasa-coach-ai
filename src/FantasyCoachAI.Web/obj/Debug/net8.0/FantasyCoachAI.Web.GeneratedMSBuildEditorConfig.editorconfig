@@ -9,47 +9,47 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = FantasyCoachAI.Web
 build_property.RootNamespace = FantasyCoachAI.Web
-build_property.ProjectDir = c:\AI-repozytoria\fantasy-ekstraklasa-coach-ai\src\FantasyCoachAI.Web\
+build_property.ProjectDir = C:\AI-repozytoria\fantasy-ekstraklasa-coach-ai\src\FantasyCoachAI.Web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = c:\AI-repozytoria\fantasy-ekstraklasa-coach-ai\src\FantasyCoachAI.Web
+build_property.MSBuildProjectDirectory = C:\AI-repozytoria\fantasy-ekstraklasa-coach-ai\src\FantasyCoachAI.Web
 build_property._RazorSourceGeneratorDebug = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/App.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Counter.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Error.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Home.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Weather.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Routes.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/_Imports.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Layout/MainLayout.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-x4nyiw16el
 
-[c:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Layout/NavMenu.razor]
+[C:/AI-repozytoria/fantasy-ekstraklasa-coach-ai/src/FantasyCoachAI.Web/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-psso717sb7

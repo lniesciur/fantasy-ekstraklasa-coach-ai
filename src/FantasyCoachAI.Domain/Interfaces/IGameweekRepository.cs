@@ -15,5 +15,10 @@ namespace FantasyCoachAI.Domain.Interfaces
             GameweekStatus? status = null,
             string? sortBy = "number",
             bool ascending = true);
+        Task<List<Gameweek>> GetAllWithMatchesAsync();
+        Task<List<Gameweek>> GetFilteredWithMatchesAsync(
+            GameweekStatus? status = null,
+            string? sortBy = "number",
+            bool ascending = true);
     }
 }

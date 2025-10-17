@@ -6,8 +6,8 @@ namespace FantasyCoachAI.Application.DTOs
     {
         public int Id { get; set; }
         public GameweekDto? Gameweek { get; set; }
-        public TeamDto HomeTeam { get; set; } = new();
-        public TeamDto AwayTeam { get; set; } = new();
+        public TeamDto? HomeTeam { get; set; }
+        public TeamDto? AwayTeam { get; set; }
         public DateTime MatchDate { get; set; }
         public MatchStatus Status { get; set; }
         public int? HomeScore { get; set; }

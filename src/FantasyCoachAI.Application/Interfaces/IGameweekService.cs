@@ -8,8 +8,10 @@ namespace FantasyCoachAI.Application.Interfaces
         Task<GameweekDto?> GetByIdAsync(int id);
         Task<GameweekDto?> GetByIdWithMatchesAsync(int id);
         Task<GameweekDto> CreateAsync(CreateGameweekCommand command);
+        Task<GameweekDto> UpdateAsync(UpdateGameweekCommand command);
         Task DeleteAsync(int id);
         Task<GameweekDto?> GetGameweekByIdAsync(int id);
         Task<GameweekDto> CreateGameweekAsync(CreateGameweekCommand command);
+        Task<GameweekDto> UpdateGameweekAsync(UpdateGameweekCommand command);
     }
 }

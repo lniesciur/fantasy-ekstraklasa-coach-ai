@@ -32,7 +32,7 @@ namespace FantasyCoachAI.Application.Tests.Services
                 new() { Id = 2, Number = 2, StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1) }
             };
 
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
+            _mockGameweekRepository.Setup(x => x.GetAllWithMatchesAsync())
                 .ReturnsAsync(expectedGameweeks);
 
             // Act
@@ -46,7 +46,7 @@ namespace FantasyCoachAI.Application.Tests.Services
                 dto.Id.Should().BeGreaterThan(0);
                 dto.Number.Should().BeGreaterThan(0);
             });
-            _mockGameweekRepository.Verify(x => x.GetAllAsync(), Times.Once);
+            _mockGameweekRepository.Verify(x => x.GetAllWithMatchesAsync(), Times.Once);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace FantasyCoachAI.Application.Tests.Services
                 new() { Id = 3, Number = 15, StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1) }
             };
 
-            _mockGameweekRepository.Setup(x => x.GetFilteredAsync(filter.Status, filter.Sort, false))
+            _mockGameweekRepository.Setup(x => x.GetFilteredWithMatchesAsync(filter.Status, filter.Sort, false))
                 .ReturnsAsync(expectedGameweeks);
 
             // Act
@@ -74,7 +74,7 @@ namespace FantasyCoachAI.Application.Tests.Services
             result.Should().HaveCount(1);
             result[0].Number.Should().Be(15);
             result[0].Status.Should().Be(GameweekStatus.Current);
-            _mockGameweekRepository.Verify(x => x.GetFilteredAsync(filter.Status, filter.Sort, false), Times.Once);
+            _mockGameweekRepository.Verify(x => x.GetFilteredWithMatchesAsync(filter.Status, filter.Sort, false), Times.Once);
         }
 
         #endregion

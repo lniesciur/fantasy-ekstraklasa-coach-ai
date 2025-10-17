@@ -41,8 +41,13 @@ namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
         public DateTime UpdatedAt { get; set; }
 
         // Navigation properties for joins
+        [Column("gameweek")]
         public GameweekDbModel? Gameweek { get; set; }
+        
+        [Column("home_team")]
         public TeamDbModel? HomeTeam { get; set; }
+        
+        [Column("away_team")]
         public TeamDbModel? AwayTeam { get; set; }
     }
 }

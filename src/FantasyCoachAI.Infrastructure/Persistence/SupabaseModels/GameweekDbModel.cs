@@ -18,5 +18,9 @@ namespace FantasyCoachAI.Infrastructure.Persistence.SupabaseModels
 
         [Column("end_date")]
         public DateTime EndDate { get; set; }
+
+        // Navigation properties for joins
+        [Column("matches")]
+        public List<MatchDbModel>? Matches { get; set; }
     }
 }
