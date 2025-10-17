@@ -9,7 +9,7 @@ namespace FantasyCoachAI.Application.Services
     public class GameweekService : IGameweekService
     {
         private readonly IGameweekRepository _gameweekRepository;
-        private readonly IMatchRepository _matchRepository; // Inject for matches
+        private readonly IMatchRepository _matchRepository;
 
         public GameweekService(IGameweekRepository gameweekRepository, IMatchRepository matchRepository)
         {
@@ -19,12 +19,10 @@ namespace FantasyCoachAI.Application.Services
 
         public async Task<List<GameweekDto>> GetGameweeksAsync(GameweekFilterDto? filter = null)
         {
-            var gameweeks = filter != null
-                ? await _gameweekRepository.GetFilteredWithMatchesAsync(
-                    status: filter.Status,
-                    sortBy: filter.Sort,
-                    ascending: filter.IsAscending)
-                : await _gameweekRepository.GetAllWithMatchesAsync();
+            var gameweeks = await _gameweekRepository.GetFilteredAsync(
+                    status: filter?.Status,
+                    sortBy: filter?.Sort,
+                    ascending: filter?.IsAscending ?? true);
 
             return gameweeks.Select(gameweek =>
             {
@@ -32,13 +30,7 @@ namespace FantasyCoachAI.Application.Services
                 if (gameweek.Matches != null && gameweek.Matches.Any())
                 {
                     var matchDtos = gameweek.Matches.Select(MapMatchToDto).ToList();
-                    dto.MatchesCount = matchDtos.Count;
                     dto.MatchSummaries = matchDtos.Select(CreateMatchSummary).ToList();
-                }
-                else
-                {
-                    dto.MatchesCount = 0;
-                    dto.MatchSummaries = new List<string>();
                 }
                 return dto;
             }).ToList();
@@ -50,33 +42,21 @@ namespace FantasyCoachAI.Application.Services
                 throw new ArgumentException("Id must be greater than zero", nameof(id));
 
             var gameweek = await _gameweekRepository.GetByIdAsync(id);
-            return gameweek != null ? MapToDto(gameweek) : null;
+            var dto = gameweek != null ? MapToDto(gameweek) : null;
+            if (dto == null)
+                return null;
+
+            dto.MatchSummaries = gameweek?.Matches != null
+                ? gameweek.Matches.Select(MapMatchToDto).Select(CreateMatchSummary).ToList()
+                : new List<MatchSummaryDto>();
+
+            return dto;
         }
 
         // Alias for GetByIdAsync to maintain compatibility with tests
         public async Task<GameweekDto?> GetGameweekByIdAsync(int id)
         {
             return await GetByIdAsync(id);
-        }
-
-        public async Task<GameweekDto?> GetByIdWithMatchesAsync(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("Id must be greater than zero", nameof(id));
-
-            var gameweek = await _gameweekRepository.GetByIdAsync(id);
-            if (gameweek == null)
-                return null;
-
-            // Fetch matches for this gameweek
-            var matches = await _matchRepository.GetByGameweekIdAsync(id);
-            var matchDtos = matches.Select(MapMatchToDto).ToList();
-
-            var dto = MapToDto(gameweek);
-            dto.MatchesCount = matchDtos.Count();
-            dto.MatchSummaries = matchDtos.Select(CreateMatchSummary).ToList();
-
-            return dto;
         }
 
         public async Task<GameweekDto> CreateAsync(CreateGameweekCommand command)
@@ -87,8 +67,8 @@ namespace FantasyCoachAI.Application.Services
             ValidateGameweekCommand(command.Number, command.StartDate, command.EndDate);
 
             // Check if gameweek number already exists
-            var existingGameweeks = await _gameweekRepository.GetAllAsync();
-            if (existingGameweeks.Any(g => g.Number == command.Number))
+            var existingGameweek = await _gameweekRepository.GetByNumberAsync(command.Number);
+            if (existingGameweek != null)
             {
                 throw new InvalidOperationException($"Gameweek with number {command.Number} already exists");
             }
@@ -108,48 +88,6 @@ namespace FantasyCoachAI.Application.Services
         public async Task<GameweekDto> CreateGameweekAsync(CreateGameweekCommand command)
         {
             return await CreateAsync(command);
-        }
-
-        public async Task<GameweekDto> UpdateAsync(UpdateGameweekCommand command)
-        {
-            if (command == null)
-                throw new ArgumentNullException(nameof(command));
-
-            if (command.Id <= 0)
-                throw new ArgumentException("Id must be greater than zero", nameof(command));
-
-            ValidateGameweekCommand(command.Number, command.StartDate, command.EndDate);
-
-            // Check if gameweek exists
-            var existingGameweek = await _gameweekRepository.GetByIdAsync(command.Id);
-            if (existingGameweek == null)
-            {
-                throw new NotFoundException($"Gameweek with ID {command.Id} not found");
-            }
-
-            // Check if gameweek number already exists for a different gameweek
-            if (existingGameweek.Number != command.Number)
-            {
-                var allGameweeks = await _gameweekRepository.GetAllAsync();
-                if (allGameweeks.Any(g => g.Number == command.Number && g.Id != command.Id))
-                {
-                    throw new InvalidOperationException($"Gameweek with number {command.Number} already exists");
-                }
-            }
-
-            // Update the gameweek
-            existingGameweek.Number = command.Number;
-            existingGameweek.StartDate = command.StartDate;
-            existingGameweek.EndDate = command.EndDate;
-
-            await _gameweekRepository.UpdateAsync(existingGameweek);
-            return MapToDto(existingGameweek);
-        }
-
-        // Alias for UpdateAsync to maintain compatibility with tests
-        public async Task<GameweekDto> UpdateGameweekAsync(UpdateGameweekCommand command)
-        {
-            return await UpdateAsync(command);
         }
 
         public async Task DeleteAsync(int id)
@@ -198,28 +136,26 @@ namespace FantasyCoachAI.Application.Services
                 StartDate = gameweek.StartDate,
                 EndDate = gameweek.EndDate,
                 Status = gameweek.GetStatus(),
-                MatchesCount = 0, // Will be populated by calling methods
                 MatchSummaries = null // Will be populated by calling methods
             };
         }
 
         // Helper for creating match summary string
-        private static string CreateMatchSummary(MatchDto match)
+        private static MatchSummaryDto CreateMatchSummary(MatchDto match)
         {
             var homeTeamName = match.HomeTeam?.Name ?? "Unknown";
             var awayTeamName = match.AwayTeam?.Name ?? "Unknown";
 
-            string scoreDisplay;
-            if (match.HomeScore.HasValue && match.AwayScore.HasValue)
+            return new MatchSummaryDto
             {
-                scoreDisplay = $"{match.HomeScore}-{match.AwayScore}";
-            }
-            else
-            {
-                scoreDisplay = "vs";
-            }
-
-            return $"{homeTeamName} - {awayTeamName} {scoreDisplay}";
+                MatchId = match.Id,
+                HomeTeamName = homeTeamName,
+                HomeTeamScore = match.HomeScore,
+                AwayTeamName = awayTeamName,
+                AwayTeamScore = match.AwayScore,
+                MatchDate = match.MatchDate,
+                Status = match.Status.ToString()
+            };
         }
 
         // Helper for mapping matches if needed

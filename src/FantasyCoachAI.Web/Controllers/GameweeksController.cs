@@ -52,7 +52,7 @@ public class GameweeksController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetGameweek(int id)
     {
-        var gameweek = await _gameweekService.GetByIdWithMatchesAsync(id);
+        var gameweek = await _gameweekService.GetByIdAsync(id);
         if (gameweek == null)
             throw new NotFoundException("Gameweek not found");
 

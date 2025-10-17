@@ -16,20 +16,6 @@ namespace FantasyCoachAI.Infrastructure.Repositories
             _supabase = supabase;
         }
 
-        public async Task<List<Gameweek>> GetAllAsync()
-        {
-            await _supabase.InitializeAsync();
-
-            var response = await _supabase
-                .From<GameweekDbModel>()
-                .Order(g => g.Number, Ordering.Ascending)
-                .Get();
-
-            return response.Models
-                .Select(dbModel => dbModel.ToDomain())
-                .ToList();
-        }
-
         public async Task<Gameweek?> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -39,24 +25,26 @@ namespace FantasyCoachAI.Infrastructure.Repositories
 
             var dbModel = await _supabase
                 .From<GameweekDbModel>()
+                .Select("*, matches:matches(*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*))")
                 .Where(g => g.Id == id)
                 .Single();
 
             return dbModel?.ToDomain();
         }
 
-        public async Task<Gameweek?> GetCurrentAsync()
+        public async Task<Gameweek?> GetByNumberAsync(int number)
         {
+            if (number <= 0)
+                throw new ArgumentException("Number must be greater than zero", nameof(number));
+
             await _supabase.InitializeAsync();
 
-            var now = DateTime.UtcNow.Date;
-
-            var response = await _supabase
+            var dbModel = await _supabase
                 .From<GameweekDbModel>()
-                .Where(g => g.StartDate <= now && g.EndDate >= now)
+                .Where(g => g.Number == number)
                 .Single();
 
-            return response?.ToDomain();
+            return dbModel?.ToDomain();
         }
 
         public async Task<Gameweek> CreateAsync(Gameweek gameweek)
@@ -85,23 +73,6 @@ namespace FantasyCoachAI.Infrastructure.Repositories
             return addedRecord?.ToDomain() ?? throw new InvalidOperationException("Failed to retrieve inserted gameweek record");
         }
 
-        public async Task UpdateAsync(Gameweek gameweek)
-        {
-            if (gameweek == null)
-                throw new ArgumentNullException(nameof(gameweek));
-
-            if (gameweek.Id <= 0)
-                throw new ArgumentException("Id must be greater than zero", nameof(gameweek));
-
-            if (!gameweek.IsValidDateRange())
-                throw new ArgumentException("Start date must be before end date", nameof(gameweek));
-
-            await _supabase.InitializeAsync();
-
-            var dbModel = gameweek.ToDbModel();
-            await _supabase.From<GameweekDbModel>().Update(dbModel);
-        }
-
         public async Task DeleteAsync(int id)
         {
             if (id <= 0)
@@ -116,70 +87,6 @@ namespace FantasyCoachAI.Infrastructure.Repositories
         }
 
         public async Task<List<Gameweek>> GetFilteredAsync(
-            GameweekStatus? status = null,
-            string? sortBy = "number",
-            bool ascending = true)
-        {
-            await _supabase.InitializeAsync();
-
-            var query = _supabase.From<GameweekDbModel>();
-
-            // Sortowanie
-            var orderBy = sortBy?.ToLower() switch
-            {
-                "start_date" => ascending
-                    ? query.Order(g => g.StartDate, Ordering.Ascending)
-                    : query.Order(g => g.StartDate, Ordering.Descending),
-                _ => ascending
-                    ? query.Order(g => g.Number, Ordering.Ascending)
-                    : query.Order(g => g.Number, Ordering.Descending)
-            };
-
-            var response = await orderBy.Get();
-            var gameweeks = response.Models.Select(dbModel => dbModel.ToDomain()).ToList();
-
-            // Filtrowanie według statusu (po pobraniu z bazy, bo status jest obliczany)
-            if (status.HasValue)
-            {
-                gameweeks = gameweeks.Where(g => g.GetStatus() == status.Value).ToList();
-            }
-
-            return gameweeks;
-        }
-
-        public async Task<Gameweek?> GetByIdWithMatchesAsync(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("Id must be greater than zero", nameof(id));
-
-            await _supabase.InitializeAsync();
-
-            var query = _supabase
-                .From<GameweekDbModel>()
-                .Select("*, matches:matches(*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*))")
-                .Where(g => g.Id == id);
-
-            var dbModel = await query.Single();
-
-            return dbModel?.ToDomain();
-        }
-
-        public async Task<List<Gameweek>> GetAllWithMatchesAsync()
-        {
-            await _supabase.InitializeAsync();
-
-            var response = await _supabase
-                .From<GameweekDbModel>()
-                .Select("*, matches:matches(*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*))")
-                .Order(g => g.Number, Ordering.Ascending)
-                .Get();
-
-            return response.Models
-                .Select(dbModel => dbModel.ToDomain())
-                .ToList();
-        }
-
-        public async Task<List<Gameweek>> GetFilteredWithMatchesAsync(
             GameweekStatus? status = null,
             string? sortBy = "number",
             bool ascending = true)

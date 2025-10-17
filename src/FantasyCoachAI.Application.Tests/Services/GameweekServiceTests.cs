@@ -3,68 +3,40 @@ using FantasyCoachAI.Application.Services;
 using FantasyCoachAI.Domain.Entities;
 using FantasyCoachAI.Domain.Enums;
 using FantasyCoachAI.Domain.Interfaces;
-using FantasyCoachAI.Domain.Exceptions;
 
 namespace FantasyCoachAI.Application.Tests.Services
 {
     public class GameweekServiceTests
     {
-    private readonly Mock<IGameweekRepository> _mockGameweekRepository;
-    private readonly Mock<IMatchRepository> _mockMatchRepository;
-    private readonly GameweekService _gameweekService;
+        private readonly Mock<IGameweekRepository> _mockGameweekRepository;
+        private readonly Mock<IMatchRepository> _mockMatchRepository;
+        private readonly GameweekService _gameweekService;
 
-    public GameweekServiceTests()
-    {
-        _mockGameweekRepository = new Mock<IGameweekRepository>();
-        _mockMatchRepository = new Mock<IMatchRepository>();
-        _gameweekService = new GameweekService(_mockGameweekRepository.Object, _mockMatchRepository.Object);
-    }
+        public GameweekServiceTests()
+        {
+            _mockGameweekRepository = new Mock<IGameweekRepository>();
+            _mockMatchRepository = new Mock<IMatchRepository>();
+            _gameweekService = new GameweekService(_mockGameweekRepository.Object, _mockMatchRepository.Object);
+        }
 
         #region GetGameweeksAsync Tests
-
-        [Fact]
-        public async Task GetGameweeksAsync_WhenNoFilterProvided_ShouldReturnAllGameweeks()
-        {
-            // Arrange
-            var expectedGameweeks = new List<Gameweek>
-            {
-                new() { Id = 1, Number = 1, StartDate = DateTime.UtcNow.AddDays(-10), EndDate = DateTime.UtcNow.AddDays(-8) },
-                new() { Id = 2, Number = 2, StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1) }
-            };
-
-            _mockGameweekRepository.Setup(x => x.GetAllWithMatchesAsync())
-                .ReturnsAsync(expectedGameweeks);
-
-            // Act
-            var result = await _gameweekService.GetGameweeksAsync();
-
-            // Assert
-            result.Should().HaveCount(2);
-            result.Should().AllSatisfy(dto =>
-            {
-                dto.Should().NotBeNull();
-                dto.Id.Should().BeGreaterThan(0);
-                dto.Number.Should().BeGreaterThan(0);
-            });
-            _mockGameweekRepository.Verify(x => x.GetAllWithMatchesAsync(), Times.Once);
-        }
 
         [Fact]
         public async Task GetGameweeksAsync_WhenFilterProvided_ShouldReturnFilteredGameweeks()
         {
             // Arrange
-            var filter = new GameweekFilterDto 
-            { 
-                Status = GameweekStatus.Current, 
-                Sort = "start_date", 
-                Order = "desc" 
+            var filter = new GameweekFilterDto
+            {
+                Status = GameweekStatus.Current,
+                Sort = "start_date",
+                Order = "desc"
             };
             var expectedGameweeks = new List<Gameweek>
             {
                 new() { Id = 3, Number = 15, StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1) }
             };
 
-            _mockGameweekRepository.Setup(x => x.GetFilteredWithMatchesAsync(filter.Status, filter.Sort, false))
+            _mockGameweekRepository.Setup(x => x.GetFilteredAsync(filter.Status, filter.Sort, false))
                 .ReturnsAsync(expectedGameweeks);
 
             // Act
@@ -74,7 +46,7 @@ namespace FantasyCoachAI.Application.Tests.Services
             result.Should().HaveCount(1);
             result[0].Number.Should().Be(15);
             result[0].Status.Should().Be(GameweekStatus.Current);
-            _mockGameweekRepository.Verify(x => x.GetFilteredWithMatchesAsync(filter.Status, filter.Sort, false), Times.Once);
+            _mockGameweekRepository.Verify(x => x.GetFilteredAsync(filter.Status, filter.Sort, false), Times.Once);
         }
 
         #endregion
@@ -151,7 +123,6 @@ namespace FantasyCoachAI.Application.Tests.Services
                 EndDate = new DateTime(2026, 1, 17)
             };
 
-            var existingGameweeks = new List<Gameweek>();
             var createdGameweek = new Gameweek
             {
                 Id = 10,
@@ -160,8 +131,8 @@ namespace FantasyCoachAI.Application.Tests.Services
                 EndDate = command.EndDate
             };
 
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(existingGameweeks);
+            _mockGameweekRepository.Setup(x => x.GetByNumberAsync(command.Number))
+                .ReturnsAsync((Gameweek?)null);
             _mockGameweekRepository.Setup(x => x.CreateAsync(It.IsAny<Gameweek>()))
                 .ReturnsAsync(createdGameweek);
 
@@ -174,10 +145,10 @@ namespace FantasyCoachAI.Application.Tests.Services
             result.Number.Should().Be(20);
             result.StartDate.Should().Be(command.StartDate);
             result.EndDate.Should().Be(command.EndDate);
-            _mockGameweekRepository.Verify(x => x.GetAllAsync(), Times.Once);
-            _mockGameweekRepository.Verify(x => x.CreateAsync(It.Is<Gameweek>(g => 
-                g.Number == command.Number && 
-                g.StartDate == command.StartDate && 
+            _mockGameweekRepository.Verify(x => x.GetByNumberAsync(command.Number), Times.Once);
+            _mockGameweekRepository.Verify(x => x.CreateAsync(It.Is<Gameweek>(g =>
+                g.Number == command.Number &&
+                g.StartDate == command.StartDate &&
                 g.EndDate == command.EndDate)), Times.Once);
         }
 
@@ -252,13 +223,16 @@ namespace FantasyCoachAI.Application.Tests.Services
                 EndDate = new DateTime(2026, 1, 17)
             };
 
-            var existingGameweeks = new List<Gameweek>
+            var existingGameweek = new Gameweek
             {
-                new() { Id = 1, Number = 15, StartDate = new DateTime(2025, 10, 1), EndDate = new DateTime(2025, 10, 3) }
+                Id = 1,
+                Number = 15,
+                StartDate = new DateTime(2025, 10, 1),
+                EndDate = new DateTime(2025, 10, 3)
             };
 
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(existingGameweeks);
+            _mockGameweekRepository.Setup(x => x.GetByNumberAsync(command.Number))
+                .ReturnsAsync(existingGameweek);
 
             // Act & Assert
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _gameweekService.CreateGameweekAsync(command));
@@ -295,165 +269,6 @@ namespace FantasyCoachAI.Application.Tests.Services
             // Act & Assert
             var exception = await Assert.ThrowsAsync<ArgumentException>(() => _gameweekService.CreateGameweekAsync(command));
             exception.Message.Should().Contain("End date cannot be more than 2 years in the future");
-        }
-
-        #endregion
-
-        #region UpdateGameweekAsync Tests
-
-        [Fact]
-        public async Task UpdateGameweekAsync_WhenCommandIsValid_ShouldUpdateGameweek()
-        {
-            // Arrange
-            var command = new UpdateGameweekCommand
-            {
-                Id = 5,
-                Number = 25,
-                StartDate = new DateTime(2026, 2, 15),
-                EndDate = new DateTime(2026, 2, 17)
-            };
-
-            var existingGameweek = new Gameweek
-            {
-                Id = 5,
-                Number = 24,
-                StartDate = new DateTime(2026, 2, 10),
-                EndDate = new DateTime(2026, 2, 12)
-            };
-
-            var allGameweeks = new List<Gameweek> { existingGameweek };
-
-            _mockGameweekRepository.Setup(x => x.GetByIdAsync(command.Id))
-                .ReturnsAsync(existingGameweek);
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(allGameweeks);
-
-            // Act
-            var result = await _gameweekService.UpdateGameweekAsync(command);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Id.Should().Be(5);
-            result.Number.Should().Be(25);
-            result.StartDate.Should().Be(command.StartDate);
-            result.EndDate.Should().Be(command.EndDate);
-            _mockGameweekRepository.Verify(x => x.GetByIdAsync(command.Id), Times.Once);
-            _mockGameweekRepository.Verify(x => x.GetAllAsync(), Times.Once);
-            _mockGameweekRepository.Verify(x => x.UpdateAsync(It.Is<Gameweek>(g => 
-                g.Id == command.Id && 
-                g.Number == command.Number)), Times.Once);
-        }
-
-        [Fact]
-        public async Task UpdateGameweekAsync_WhenCommandIsNull_ShouldThrowArgumentNullException()
-        {
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _gameweekService.UpdateGameweekAsync(null!));
-            exception.ParamName.Should().Be("command");
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        [InlineData(-5)]
-        public async Task UpdateGameweekAsync_WhenIdIsInvalid_ShouldThrowArgumentException(int invalidId)
-        {
-            // Arrange
-            var command = new UpdateGameweekCommand
-            {
-                Id = invalidId,
-                Number = 25,
-                StartDate = new DateTime(2026, 2, 15),
-                EndDate = new DateTime(2026, 2, 17)
-            };
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _gameweekService.UpdateGameweekAsync(command));
-            exception.Message.Should().Contain("Id must be greater than zero");
-            exception.ParamName.Should().Be("command");
-        }
-
-        [Fact]
-        public async Task UpdateGameweekAsync_WhenGameweekNotFound_ShouldThrowNotFoundException()
-        {
-            // Arrange
-            var command = new UpdateGameweekCommand
-            {
-                Id = 999,
-                Number = 25,
-                StartDate = new DateTime(2026, 2, 15),
-                EndDate = new DateTime(2026, 2, 17)
-            };
-
-            _mockGameweekRepository.Setup(x => x.GetByIdAsync(command.Id))
-                .ReturnsAsync((Gameweek?)null);
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => _gameweekService.UpdateGameweekAsync(command));
-            exception.Message.Should().Contain("Gameweek with ID 999 not found");
-        }
-
-        [Fact]
-        public async Task UpdateGameweekAsync_WhenNumberConflictsWithAnotherGameweek_ShouldThrowInvalidOperationException()
-        {
-            // Arrange
-            var command = new UpdateGameweekCommand
-            {
-                Id = 5,
-                Number = 26, // This number exists on another gameweek
-                StartDate = new DateTime(2026, 2, 15),
-                EndDate = new DateTime(2026, 2, 17)
-            };
-
-            var existingGameweek = new Gameweek { Id = 5, Number = 25 };
-            var conflictingGameweek = new Gameweek { Id = 6, Number = 26 };
-            var allGameweeks = new List<Gameweek> { existingGameweek, conflictingGameweek };
-
-            _mockGameweekRepository.Setup(x => x.GetByIdAsync(command.Id))
-                .ReturnsAsync(existingGameweek);
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(allGameweeks);
-
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _gameweekService.UpdateGameweekAsync(command));
-            exception.Message.Should().Contain("Gameweek with number 26 already exists");
-        }
-
-        [Fact]
-        public async Task UpdateGameweekAsync_WhenNumberIsSameAsCurrentGameweek_ShouldSucceed()
-        {
-            // Arrange - updating gameweek but keeping the same number
-            var command = new UpdateGameweekCommand
-            {
-                Id = 5,
-                Number = 25, // Same number as current
-                StartDate = new DateTime(2026, 2, 20), // Different dates
-                EndDate = new DateTime(2026, 2, 22)
-            };
-
-            var existingGameweek = new Gameweek
-            {
-                Id = 5,
-                Number = 25,
-                StartDate = new DateTime(2026, 2, 15),
-                EndDate = new DateTime(2026, 2, 17)
-            };
-
-            var allGameweeks = new List<Gameweek> { existingGameweek };
-
-            _mockGameweekRepository.Setup(x => x.GetByIdAsync(command.Id))
-                .ReturnsAsync(existingGameweek);
-            _mockGameweekRepository.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(allGameweeks);
-
-            // Act
-            var result = await _gameweekService.UpdateGameweekAsync(command);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Number.Should().Be(25);
-            result.StartDate.Should().Be(command.StartDate);
-            result.EndDate.Should().Be(command.EndDate);
         }
 
         #endregion
