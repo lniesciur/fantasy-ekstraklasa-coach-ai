@@ -39,6 +39,7 @@ namespace FantasyCoachAI.Infrastructure
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<IGameweekRepository, GameweekRepository>();
             services.AddScoped<IMatchRepository, MatchRepository>();
+            services.AddScoped<IPlayerStatsRepository, PlayerStatsRepository>();
 
             return services;
         }

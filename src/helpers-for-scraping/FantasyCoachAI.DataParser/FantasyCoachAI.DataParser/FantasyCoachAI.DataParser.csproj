@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="players.html" />
+    <None Remove="player_stats.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="players.html" />
+    <EmbeddedResource Include="player_stats.html" />
+  </ItemGroup>
+
+</Project>

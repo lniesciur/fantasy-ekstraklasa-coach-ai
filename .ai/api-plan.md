@@ -391,11 +391,14 @@ Update existing player
 Get player statistics for specific gameweek
 - **Query Parameters:**
   - `gameweek_id`: integer (required)
-  - `player_id`: integer
-  - `team_id`: integer
-  - `position`: GK, DEF, MID, FWD
-  - `sort`: fantasy_points, form, price
-  - `limit`: integer (default: 50)
+  - `player_id`: integer (optional)
+  - `team_id`: integer (optional)
+  - `position`: GK, DEF, MID, FWD (optional)
+  - `sort`: fantasy_points, form, price (default: fantasy_points)
+  - `order`: asc, desc (default: desc)
+  - `limit`: integer (default: 50, max: 100)
+  - `page`: integer (default: 1)
+
 - **Response (200):**
 ```json
 {
@@ -404,30 +407,86 @@ Get player statistics for specific gameweek
       "id": 1,
       "player": {
         "id": 1,
-        "name": "Player Name",
+        "name": "Robert Lewandowski",
         "position": "FWD"
       },
-      "gameweek_id": 15,
+      "gameweek": {
+        "id": 15,
+        "number": 15
+      },
       "fantasy_points": 12,
       "minutes_played": 90,
       "goals": 2,
       "assists": 1,
       "yellow_cards": 0,
       "red_cards": 0,
+      "saves": 0,
+      "penalties_saved": 0,
+      "penalties_won": 1,
+      "penalties_scored": 1,
+      "penalties_caused": 0,
+      "penalties_missed": 0,
+      "lotto_assists": 0,
+      "own_goals": 0,
+      "in_team_of_week": true,
       "price": 4.1,
       "predicted_start": true,
       "health_status": "Pewny"
     }
   ],
-  "gameweek": {
-    "id": 15,
-    "number": 15,
-    "start_date": "2025-10-20",
-    "end_date": "2025-10-22"
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 487,
+    "pages": 10
   }
 }
 ```
-- **Errors:** 400 (Invalid gameweek), 401 (Unauthorized)
+
+- **Errors:** 400 (Invalid parameters), 401 (Unauthorized), 404 (Gameweek not found)
+
+#### POST /api/player-stats/import
+Import player statistics from CSV file
+- **Request:** Multipart form data
+  - `file`: CSV file with player statistics
+  - `gameweek_id`: integer (required)
+
+- **CSV Column Format** (all optional except player_id, gameweek_id, fantasy_points, minutes_played, price):
+  - `player_id` - integer
+  - `match_id` - integer (optional)
+  - `fantasy_points` - integer (0-100)
+  - `minutes_played` - integer (0-120)
+  - `goals` - integer (default: 0)
+  - `assists` - integer (default: 0)
+  - `yellow_cards` - integer (default: 0)
+  - `red_cards` - integer (default: 0)
+  - `saves` - integer (default: 0)
+  - `penalties_saved` - integer (default: 0)
+  - `penalties_won` - integer (default: 0)
+  - `penalties_scored` - integer (default: 0)
+  - `penalties_caused` - integer (default: 0)
+  - `penalties_missed` - integer (default: 0)
+  - `lotto_assists` - integer (default: 0)
+  - `own_goals` - integer (default: 0)
+  - `in_team_of_week` - boolean (default: false)
+  - `price` - decimal
+  - `predicted_start` - boolean (default: false)
+  - `health_status` - enum (Pewny, Wątpliwy, Nie zagra, default: Pewny)
+
+- **Response (201):**
+```json
+{
+  "success": true,
+  "imported_count": 148,
+  "skipped_count": 2,
+  "errors": [
+    "Row 5: Invalid player_id",
+    "Row 12: Missing fantasy_points"
+  ]
+}
+```
+
+- **Errors:** 400 (Invalid file or data), 401 (Unauthorized), 413 (File too large)
 
 ### 2.6 Gameweeks
 
@@ -1640,6 +1699,10 @@ Manually trigger scraping job (admin only)
 - **GET /api/matches/{id}**: Get specific - Implemented
 - **POST /api/matches**: Create - Implemented (with validation)
 - **PUT /api/matches/{id}**: Update - Implemented
+
+#### Player Statistics (2.5)
+- **GET /api/player-stats**: List with filtering (gameweek_id, player_id, team_id, position, sort, order, limit, page) - **TODO**: Implement via PlayerStatsController
+- **POST /api/player-stats/import**: Import from CSV - **TODO**: Implement with CsvHelper
 
 #### Admin & Monitoring (2.14)
 - **GET /api/admin/dashboard**: System health (placeholder data) - Implemented via AdminController (requires auth)

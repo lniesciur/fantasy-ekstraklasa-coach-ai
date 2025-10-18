@@ -9,6 +9,7 @@ using FluentValidation;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,9 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fantasy Coach AI API", Version = "v1" });
+
+        // Add operation filter for file uploads
+        c.OperationFilter<FileUploadOperationFilter>();
 
         // Optional: Add XML comments if enabled
         // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

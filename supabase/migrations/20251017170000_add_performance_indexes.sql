@@ -8,7 +8,6 @@ CREATE INDEX IF NOT EXISTS idx_teams_is_active ON teams (is_active);
 -- Index for gameweeks filtering/sorting (number, dates, status)
 CREATE INDEX IF NOT EXISTS idx_gameweeks_number ON gameweeks (number);
 CREATE INDEX IF NOT EXISTS idx_gameweeks_start_date ON gameweeks (start_date);
-CREATE INDEX IF NOT EXISTS idx_gameweeks_status ON gameweeks (status);
 
 -- Index for matches (core filtering: date, gameweek, teams, status, pagination)
 CREATE INDEX IF NOT EXISTS idx_matches_match_date ON matches (match_date);

@@ -5,31 +5,87 @@ alwaysApply: false
 ---
 ### Guidelines for Blazor
 
-**Architecture**
+**Architecture & Project Structure**
 - Extract business logic into services in `Services/` (FantasyCoachAI.Application)
-- Register services in Program.cs with appropriate lifetime
-- Use dependency injection for service access
+- Register services in Program.cs with appropriate lifetime (Scoped for services)
+- Use dependency injection for service access with `@inject` directive
+- Separate concerns: Pages, Layouts, Components in dedicated folders
+- Use _Imports.razor for global using statements
 
-**Components**
-- Use component lifecycle: OnInitialized, OnParametersSet, OnAfterRender
+**Component Lifecycle & State Management**
+- Use component lifecycle: OnInitialized, OnInitializedAsync, OnParametersSet, OnAfterRender
 - Use `[Parameter]` for inputs, implement IDisposable when needed
-- Use CSS isolation with `.razor.css` files
+- Use `@rendermode InteractiveServer` for interactive components
+- Call `StateHasChanged()` only when necessary and after async operations
+- Use `@code` blocks for component logic and state
 
-**Data & State**
-- Use `@bind` for two-way binding
-- Use cascading parameters for shared data
-- Call `StateHasChanged()` only when necessary
+**MudBlazor Integration**
+- Use MudBlazor components for consistent UI (MudContainer, MudTable, MudText, etc.)
+- Configure MudBlazor services in Program.cs with `AddMudServices()`
+- Use MudThemeProvider, MudDialogProvider, MudSnackbarProvider in layout
+- Leverage MudBlazor theming and responsive design features
+- Use MudBlazor components for loading states, alerts, and data display
 
-**Forms**
+**Data & State Management**
+- Use `@bind` for two-way binding with proper event handling
+- Use cascading parameters for shared data across component tree
+- Handle loading states with boolean flags and conditional rendering
+- Use try-catch blocks for error handling in async operations
+- Implement proper error state management with user-friendly messages
+
+**Forms & Validation**
 - Use `EditForm` with data annotations validation
 - Show validation with `ValidationSummary` and `ValidationMessage`
+- Use FluentValidation for complex validation rules
+- Handle form submission with proper error handling
+- Use MudBlazor form components (MudTextField, MudSelect, etc.)
 
-**HTTP & APIs**
-- Inject `HttpClient`, handle loading/error states explicitly
-- Use typed HttpClient clients when possible
+**HTTP & API Integration**
+- Inject services directly using `@inject IServiceName ServiceName`
+- Handle loading/error states explicitly with conditional rendering
+- Use async/await patterns in OnInitializedAsync
+- Implement proper error handling with try-catch blocks
+- Use service layer for API calls instead of direct HttpClient
 
-**Best Practices**
-- Keep components focused on presentation
+**UI/UX Patterns**
+- Use MudContainer for responsive layouts with MaxWidth settings
+- Implement loading states with MudProgressCircular
+- Use MudAlert for error and info messages with appropriate Severity
+- Use MudTable for data display with proper responsive settings
+- Use MudChip for status indicators and tags
+- Use MudAvatar for images with fallback icons
+
+**Component Design**
+- Keep components focused on presentation logic
+- Use proper using statements for namespaces
+- Implement proper error boundaries and error handling
+- Use PageTitle for SEO and accessibility
+- Use semantic HTML with proper ARIA attributes
+
+**Performance & Best Practices**
+- Use CSS isolation with `.razor.css` files
 - Avoid JS interop unless necessary
-- Dispose event handlers and subscriptions properly
-- Store settings in appsettings.json
+- Dispose event handlers and subscriptions properly in IDisposable
+- Use proper async patterns to avoid blocking UI
+- Implement proper loading states for better UX
+- Use conditional rendering for different states (loading, error, data)
+
+**Routing & Navigation**
+- Use `@page` directive for routing
+- Use NavLink components for navigation with proper Match attributes
+- Implement proper route parameters and query strings
+- Use FocusOnNavigate for accessibility
+
+**Styling & Theming**
+- Use MudBlazor's built-in theming system
+- Leverage MudBlazor's responsive design features
+- Use CSS classes for custom styling
+- Implement proper responsive breakpoints
+- Use MudBlazor's color and typography system
+
+**Error Handling & User Experience**
+- Implement comprehensive error handling with try-catch
+- Show user-friendly error messages with MudAlert
+- Use loading indicators during async operations
+- Implement proper fallback states for missing data
+- Use structured error messages for debugging
