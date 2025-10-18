@@ -5,6 +5,7 @@ using Xunit;
 
 namespace FantasyCoachAI.Domain.Tests.Entities
 {
+    [Trait("Category", "Unit")]
     public class GameweekTests
     {
         [Fact]

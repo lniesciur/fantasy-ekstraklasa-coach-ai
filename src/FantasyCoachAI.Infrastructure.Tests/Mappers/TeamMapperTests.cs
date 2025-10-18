@@ -6,6 +6,7 @@ using Xunit;
 
 namespace FantasyCoachAI.Infrastructure.Tests.Mappers
 {
+    [Trait("Category", "Unit")]
     public class TeamMapperTests
     {
         [Fact]

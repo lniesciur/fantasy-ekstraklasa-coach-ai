@@ -4,6 +4,7 @@ using FluentValidation.TestHelper;
 
 namespace FantasyCoachAI.Application.Tests.Validators
 {
+    [Trait("Category", "Unit")]
     public class TeamFilterDtoValidatorTests
     {
         private readonly TeamFilterDtoValidator _validator;

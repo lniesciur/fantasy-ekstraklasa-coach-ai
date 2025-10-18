@@ -6,6 +6,7 @@ using FantasyCoachAI.Domain.Interfaces;
 
 namespace FantasyCoachAI.Application.Tests.Services
 {
+    [Trait("Category", "Unit")]
     public class GameweekServiceTests
     {
         private readonly Mock<IGameweekRepository> _mockGameweekRepository;

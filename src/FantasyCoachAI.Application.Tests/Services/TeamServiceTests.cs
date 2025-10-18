@@ -9,6 +9,7 @@ using Xunit;
 
 namespace FantasyCoachAI.Application.Tests.Services
 {
+    [Trait("Category", "Unit")]
     public class TeamServiceTests
     {
         private readonly Mock<ITeamRepository> _mockTeamRepository;
