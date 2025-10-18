@@ -1,0 +1,31 @@
+<MudCard Class="@Class">
+    <MudCardContent Class="pa-4 text-center">
+        <MudIcon Icon="@Icon" Size="Size.Large" Color="IconColor" Class="mb-2" />
+        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Label</MudText>
+        <MudText Typo="Typo.h5" Class="font-weight-bold">@Value</MudText>
+        @if (!string.IsNullOrEmpty(SubtextLabel))
+        {
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mt-1">@SubtextLabel</MudText>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public Color IconColor { get; set; } = Color.Primary;
+
+    [Parameter]
+    public string? SubtextLabel { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+}

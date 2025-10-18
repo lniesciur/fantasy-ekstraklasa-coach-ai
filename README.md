@@ -11,6 +11,7 @@ Aplikacja webowa do zarządzania fantasy football dla polskiej Ekstraklasy, zbud
 - **API REST** - pełne API do integracji z zewnętrznymi systemami
 - **Dashboard administracyjny** - panel do zarządzania danymi
 - **Health checks** - monitoring stanu aplikacji i połączenia z bazą danych
+- **System logowania** - forma logowania z mockowaną autentykacją (przygotowana do integracji z Supabase)
 
 ## 🏗️ Architektura
 

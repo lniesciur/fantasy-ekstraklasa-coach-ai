@@ -1,0 +1,63 @@
+/* Dashboard Header Styling */
+.dashboard-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-header :deep h4 {
+    color: #1976d2;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 959px) {
+    .dashboard-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+}
+
+@media (max-width: 599px) {
+    .dashboard-header {
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+    }
+}
+
+/* Card Container Heights */
+.dashboard-card-full-height {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Recent Lineups Table Responsive */
+@media (max-width: 959px) {
+    :deep .mud-simple-table {
+        font-size: 0.85rem;
+    }
+    
+    :deep .mud-table-cell {
+        padding: 8px 4px;
+    }
+}
+
+/* Spacing Utilities */
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-3 {
+    gap: 1rem;
+}
+
+.gap-4 {
+    gap: 1.5rem;
+}
+
+/* Loading State */
+:deep .mud-progress-circular {
+    margin: 0 auto;
+}

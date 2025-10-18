@@ -1,0 +1,29 @@
+/* Stats Card */
+:deep .mud-card {
+    text-align: center;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    height: 100%;
+}
+
+:deep .mud-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+:deep .mud-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon */
+:deep .mud-icon-root {
+    margin-bottom: 0.75rem;
+}
+
+/* Center text utility */
+.text-center {
+    text-align: center;
+}

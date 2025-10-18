@@ -1,0 +1,22 @@
+/* Quick Action Button */
+:deep .mud-button-root {
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+:deep .mud-button-filled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+:deep .mud-button-filled:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f94 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Full Width Button */
+:deep .w-100 {
+    width: 100%;
+}

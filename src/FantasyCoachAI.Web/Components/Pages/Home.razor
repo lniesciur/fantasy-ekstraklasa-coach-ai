@@ -1,109 +1,14 @@
 ﻿@page "/"
-@using FantasyCoachAI.Domain.Entities
-@using FantasyCoachAI.Application.Interfaces
-@using FantasyCoachAI.Application.DTOs
-@using MudBlazor
-@inject ITeamService TeamService
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
 
 <PageTitle>Fantasy Coach AI</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-    <MudText Typo="Typo.h3" GutterBottom="true">Fantasy Coach AI</MudText>
-    <MudText Typo="Typo.body1" Class="mb-4">Lista drużyn Ekstraklasy</MudText>
-
-    @if (isLoading)
-    {
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-        <MudText>Ładowanie drużyn...</MudText>
-    }
-    else if (errorMessage != null)
-    {
-        <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
-    }
-    else if (teams != null && teams.Any())
-    {
-        <MudTable Items="@teams" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true">
-            <HeaderContent>
-                <MudTh>Nazwa</MudTh>
-                <MudTh>Kod</MudTh>
-                <MudTh>Herb</MudTh>
-                <MudTh>Status</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Nazwa">
-                    <MudText Typo="Typo.body2"><strong>@context.Name</strong></MudText>
-                </MudTd>
-                <MudTd DataLabel="Kod">
-                    @if (!string.IsNullOrEmpty(context.ShortCode))
-                    {
-                        <MudChip Size="Size.Small" Color="Color.Primary">@context.ShortCode</MudChip>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.body2" Color="Color.Secondary">-</MudText>
-                    }
-                </MudTd>
-                <MudTd DataLabel="Herb">
-                    @if (!string.IsNullOrEmpty(context.CrestUrl))
-                    {
-                        <MudAvatar Image="@context.CrestUrl" Size="Size.Medium" Class="team-crest" />
-                    }
-                    else
-                    {
-                        <MudAvatar Size="Size.Medium" Class="team-crest-placeholder">
-                            <MudIcon Icon="@Icons.Material.Filled.Shield" Size="Size.Medium" Color="Color.Secondary" />
-                        </MudAvatar>
-                    }
-                </MudTd>
-                <MudTd DataLabel="Status">
-                    @if (context.IsActive)
-                    {
-                        <MudChip Size="Size.Small" Color="Color.Success">Aktywny</MudChip>
-                    }
-                    else
-                    {
-                        <MudChip Size="Size.Small" Color="Color.Default">Nieaktywny</MudChip>
-                    }
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-
-        <MudText Typo="Typo.body2" Class="mt-4">
-            Znaleziono drużyn: <strong>@teams.Count</strong>
-        </MudText>
-    }
-    else
-    {
-        <MudAlert Severity="Severity.Info">Brak drużyn w bazie danych.</MudAlert>
-    }
-</MudContainer>
-
 @code {
-    private List<TeamDto>? teams;
-    private bool isLoading = true;
-    private string? errorMessage;
-
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            isLoading = true;
-            errorMessage = null;
-
-            // Używamy nowej metody z filtrem!
-            teams = await TeamService.GetTeamsAsync(new TeamFilterDto
-                {
-                    IsActive = true
-                });
-        }
-        catch (Exception ex)
-        {
-            errorMessage = $"Błąd podczas ładowania drużyn: {ex.Message}";
-            Console.WriteLine($"Error: {ex}");
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        // Redirect to login page
+        NavigationManager.NavigateTo("/login");
+        await Task.CompletedTask;
     }
 }

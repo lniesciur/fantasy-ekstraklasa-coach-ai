@@ -1,0 +1,35 @@
+/* Dashboard Card Styling */
+:deep .mud-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+
+:deep .mud-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Card Header */
+:deep .mud-card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem;
+}
+
+:deep .mud-card-header .mud-icon {
+    color: white;
+}
+
+:deep .mud-card-header .mud-text {
+    color: white;
+}
+
+/* Card Content */
+:deep .mud-card-content {
+    padding: 1.5rem;
+}
+
+/* Divider */
+:deep .mud-divider {
+    margin: 0;
+}

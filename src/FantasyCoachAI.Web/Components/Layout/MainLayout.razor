@@ -4,20 +4,25 @@
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider MaxDisplayedSnackbars="3" PreventDuplicates="true" />
+
+<input type="checkbox" id="nav-toggle" class="navbar-toggler" />
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+    <div class="main-content">
+        <div class="top-bar">
+            <label for="nav-toggle" class="nav-toggle-label"></label>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+        <main class="content-area">
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui">

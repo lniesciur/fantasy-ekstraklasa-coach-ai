@@ -1,0 +1,23 @@
+<MudButton 
+    Variant="Variant.Filled"
+    Color="Color.Primary"
+    Class="@(IsFullWidth ? "w-100" : "")"
+    Size="Size.Large"
+    Href="@Href"
+    StartIcon="@Icon">
+    @Text
+</MudButton>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    [Parameter]
+    public bool IsFullWidth { get; set; } = false;
+}

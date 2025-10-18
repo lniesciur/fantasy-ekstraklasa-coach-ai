@@ -1,0 +1,160 @@
+@page "/login"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using FantasyCoachAI.Web.Components.Layout
+@layout EmptyLayout
+
+<PageTitle>Logowanie - Fantasy Coach AI</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center login-container" Style="min-height: 100vh;">
+    <MudPaper Class="pa-8 w-100" Elevation="2" Style="max-width: 400px;">
+        <!-- Header - Improved Design -->
+        <div class="text-center mb-8">
+            <div class="text-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.EmojiEvents" Size="Size.Large" Color="Color.Primary" Style="font-size: 2.5rem;"></MudIcon>
+            </div>
+            <MudText Typo="Typo.h6" Class="font-weight-bold mb-1" Style="font-size: 1.1rem;">Fantasy Ekstraklasa AI Coach</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Zaloguj się do swojego konta</MudText>
+        </div>
+
+        <!-- Alert Messages -->
+        @if (hasError)
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4" ShowCloseIcon="true" CloseIconClicked="ClearError">
+                @errorMessage
+            </MudAlert>
+        }
+
+        <!-- Login Form -->
+        <EditForm Model="loginModel" OnSubmit="HandleLoginAsync">
+            <!-- Email Input -->
+            <MudTextField 
+                @bind-Value="loginModel.Email"
+                Label="Email"
+                Placeholder="twoj@email.com"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                InputType="InputType.Email"
+                FullWidth="true"
+                Class="mb-4"
+                Disabled="isSubmitting">
+            </MudTextField>
+
+            <!-- Password Input -->
+            <MudTextField 
+                @bind-Value="loginModel.Password"
+                Label="Hasło"
+                Placeholder="••••••••"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                InputType="showPassword ? InputType.Text : InputType.Password"
+                FullWidth="true"
+                Class="mb-2"
+                Disabled="isSubmitting"
+                AdornmentIcon="showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff"
+                OnAdornmentClick="() => showPassword = !showPassword"
+                AdornmentClickAction="AdornmentAction.Clear">
+            </MudTextField>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="d-flex justify-space-between align-center mt-4 mb-4">
+                <MudCheckBox 
+                    @bind-Value="loginModel.RememberMe"
+                    Label="Zapamiętaj mnie"
+                    Disabled="isSubmitting" />
+                <MudLink Href="/reset-password" Underline="Underline.Hover">
+                    <MudText Typo="Typo.caption" Color="Color.Primary">Zapomniałem hasła</MudText>
+                </MudLink>
+            </div>
+
+            <!-- Submit Button -->
+            <MudButton 
+                ButtonType="ButtonType.Submit"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="isSubmitting">
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Logowanie...</MudText>
+                }
+                else
+                {
+                    <MudText>Zaloguj się</MudText>
+                }
+            </MudButton>
+        </EditForm>
+
+        <!-- Divider -->
+        <MudDivider Class="my-6" />
+
+        <!-- Registration Link -->
+        <div class="text-center">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Nie masz konta?
+                <MudLink Href="/register" Underline="Underline.None">
+                    <strong>Utwórz je teraz</strong>
+                </MudLink>
+            </MudText>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private LoginModel loginModel = new();
+    private bool isSubmitting = false;
+    private bool hasError = false;
+    private string errorMessage = string.Empty;
+    private bool showPassword = false;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private async Task HandleLoginAsync()
+    {
+        try
+        {
+            // Validate that email and password are not empty
+            if (string.IsNullOrWhiteSpace(loginModel.Email) || string.IsNullOrWhiteSpace(loginModel.Password))
+            {
+                hasError = true;
+                errorMessage = "Email i hasło nie mogą być puste";
+                return;
+            }
+
+            isSubmitting = true;
+            hasError = false;
+
+            // Simulate login delay
+            await Task.Delay(1000);
+
+            // For now, just redirect to dashboard without validation
+            NavigationManager.NavigateTo("/dashboard");
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = $"Błąd podczas logowania: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = string.Empty;
+    }
+
+    // Model
+    public class LoginModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public bool RememberMe { get; set; } = false;
+    }
+}

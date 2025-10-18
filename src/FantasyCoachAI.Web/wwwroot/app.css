@@ -49,3 +49,25 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+/* Bootstrap Icons - Global Styles */
+.bi {
+    display: inline-block;
+    vertical-align: -0.125em;
+}
+
+/* Icon animations */
+.bi-speedometer2::before,
+.bi-collection-play::before,
+.bi-stars::before,
+.bi-people-fill::before,
+.bi-shield-fill::before,
+.bi-calendar2-event::before,
+.bi-graph-up::before {
+    transition: color 0.2s ease;
+}
+
+/* Smooth icon scaling */
+i.nav-icon {
+    will-change: transform;
+}

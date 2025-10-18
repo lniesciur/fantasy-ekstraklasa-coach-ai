@@ -1,0 +1,227 @@
+@page "/register"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using FantasyCoachAI.Web.Components.Layout
+@layout EmptyLayout
+
+<PageTitle>Rejestracja - Fantasy Coach AI</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center login-container" Style="min-height: 100vh;">
+    <MudPaper Class="pa-8 w-100" Elevation="2" Style="max-width: 400px;">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="text-center mb-4">
+                <MudIcon Icon="@Icons.Material.Filled.EmojiEvents" Size="Size.Large" Color="Color.Primary" Style="font-size: 2.5rem;"></MudIcon>
+            </div>
+            <MudText Typo="Typo.h6" Class="font-weight-bold mb-1" Style="font-size: 1.1rem;">Utwórz nowe konto</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Dołącz do Fantasy Ekstraklasa AI Coach</MudText>
+        </div>
+
+        <!-- Alert Messages -->
+        @if (hasError)
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4" ShowCloseIcon="true" CloseIconClicked="ClearError">
+                @errorMessage
+            </MudAlert>
+        }
+
+        @if (hasSuccess)
+        {
+            <MudAlert Severity="Severity.Success" Class="mb-4" ShowCloseIcon="true" CloseIconClicked="ClearSuccess">
+                Konto zostało utworzone pomyślnie! Redirekcja na logowanie...
+            </MudAlert>
+        }
+
+        <!-- Registration Form -->
+        <EditForm Model="registerModel" OnSubmit="HandleRegisterAsync">
+            <!-- Full Name Input -->
+            <MudTextField 
+                @bind-Value="registerModel.FullName"
+                Label="Imię i Nazwisko"
+                Placeholder="Jan Kowalski"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                FullWidth="true"
+                Class="mb-4"
+                Disabled="isSubmitting">
+            </MudTextField>
+
+            <!-- Email Input -->
+            <MudTextField 
+                @bind-Value="registerModel.Email"
+                Label="Email"
+                Placeholder="twoj@email.com"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                InputType="InputType.Email"
+                FullWidth="true"
+                Class="mb-4"
+                Disabled="isSubmitting">
+            </MudTextField>
+
+            <!-- Password Input -->
+            <MudTextField 
+                @bind-Value="registerModel.Password"
+                Label="Hasło"
+                Placeholder="••••••••"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                InputType="showPassword ? InputType.Text : InputType.Password"
+                FullWidth="true"
+                Class="mb-4"
+                Disabled="isSubmitting"
+                AdornmentIcon="showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff"
+                OnAdornmentClick="() => showPassword = !showPassword"
+                AdornmentClickAction="AdornmentAction.Clear">
+            </MudTextField>
+
+            <!-- Confirm Password Input -->
+            <MudTextField 
+                @bind-Value="registerModel.ConfirmPassword"
+                Label="Potwierdź hasło"
+                Placeholder="••••••••"
+                Variant="Variant.Outlined"
+                Margin="Margin.Normal"
+                InputType="showPassword ? InputType.Text : InputType.Password"
+                FullWidth="true"
+                Class="mb-4"
+                Disabled="isSubmitting"
+                AdornmentIcon="showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff"
+                OnAdornmentClick="() => showPassword = !showPassword"
+                AdornmentClickAction="AdornmentAction.Clear">
+            </MudTextField>
+
+            <!-- Terms & Conditions -->
+            <div class="mb-4">
+                <MudCheckBox 
+                    @bind-Value="registerModel.AcceptTerms"
+                    Label="Akceptuję Regulamin i Politykę Prywatności"
+                    Disabled="isSubmitting" />
+            </div>
+
+            <!-- Submit Button -->
+            <MudButton 
+                ButtonType="ButtonType.Submit"
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                FullWidth="true"
+                Disabled="isSubmitting">
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Rejestracja...</MudText>
+                }
+                else
+                {
+                    <MudText>Utwórz konto</MudText>
+                }
+            </MudButton>
+        </EditForm>
+
+        <!-- Divider -->
+        <MudDivider Class="my-6" />
+
+        <!-- Login Link -->
+        <div class="text-center">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Masz już konto?
+                <MudLink Href="/login" Underline="Underline.None">
+                    <strong>Zaloguj się</strong>
+                </MudLink>
+            </MudText>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private RegisterModel registerModel = new();
+    private bool isSubmitting = false;
+    private bool hasError = false;
+    private bool hasSuccess = false;
+    private string errorMessage = string.Empty;
+    private bool showPassword = false;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private async Task HandleRegisterAsync()
+    {
+        try
+        {
+            // Validation
+            if (string.IsNullOrWhiteSpace(registerModel.FullName) || 
+                string.IsNullOrWhiteSpace(registerModel.Email) || 
+                string.IsNullOrWhiteSpace(registerModel.Password) ||
+                string.IsNullOrWhiteSpace(registerModel.ConfirmPassword))
+            {
+                hasError = true;
+                errorMessage = "Wszystkie pola muszą być wypełnione";
+                return;
+            }
+
+            if (registerModel.Password != registerModel.ConfirmPassword)
+            {
+                hasError = true;
+                errorMessage = "Hasła nie pasują do siebie";
+                return;
+            }
+
+            if (registerModel.Password.Length < 8)
+            {
+                hasError = true;
+                errorMessage = "Hasło musi mieć przynajmniej 8 znaków";
+                return;
+            }
+
+            if (!registerModel.AcceptTerms)
+            {
+                hasError = true;
+                errorMessage = "Musisz zaakceptować Regulamin i Politykę Prywatności";
+                return;
+            }
+
+            isSubmitting = true;
+            hasError = false;
+
+            // Simulate registration delay
+            await Task.Delay(1500);
+
+            hasSuccess = true;
+
+            // Redirect to login after 2 seconds
+            await Task.Delay(2000);
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = $"Błąd podczas rejestracji: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void ClearError()
+    {
+        hasError = false;
+        errorMessage = string.Empty;
+    }
+
+    private void ClearSuccess()
+    {
+        hasSuccess = false;
+    }
+
+    // Model
+    public class RegisterModel
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public bool AcceptTerms { get; set; } = false;
+    }
+}

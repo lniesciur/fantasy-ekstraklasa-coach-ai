@@ -18,6 +18,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
+builder.Services.AddHttpClient();
+
 // API Services
 builder.Services.AddControllers(options =>
 {

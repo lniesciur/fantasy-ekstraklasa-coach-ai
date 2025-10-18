@@ -1,0 +1,139 @@
+::deep .login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+::deep .login-paper {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Header Styling */
+::deep .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+::deep .login-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+::deep .login-header p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* Form Styling */
+::deep .mud-text-field {
+    margin-bottom: 1rem;
+}
+
+::deep .mud-text-field .mud-input-slot {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Button Styling */
+::deep .mud-button-root {
+    text-transform: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+::deep .mud-button-filled-primary {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border: 1px solid rgba(15, 52, 96, 0.5);
+}
+
+::deep .mud-button-filled-primary:hover {
+    background: linear-gradient(135deg, #1a5490 0%, #1d5e8e 100%);
+    box-shadow: 0 8px 24px rgba(15, 52, 96, 0.35);
+}
+
+/* Link Styling */
+::deep .mud-link {
+    color: #667eea;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+::deep .mud-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* Alert Styling */
+::deep .mud-alert {
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+}
+
+/* Checkbox Styling */
+::deep .mud-checkbox {
+    margin-right: auto;
+}
+
+/* Divider */
+::deep .mud-divider {
+    opacity: 0.3;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    ::deep .login-paper {
+        border-radius: 8px;
+    }
+
+    ::deep .login-header h1 {
+        font-size: 1.5rem;
+    }
+
+    ::deep .login-header p {
+        font-size: 0.85rem;
+    }
+}
+
+/* Loading State */
+::deep .mud-button-root[disabled] {
+    opacity: 0.8;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    ::deep .login-container {
+        background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    }
+
+    ::deep .login-paper {
+        background: #1e1e1e;
+        color: #fff;
+    }
+
+    ::deep .login-header h1 {
+        color: #fff;
+    }
+
+    ::deep .login-header p {
+        color: #ccc;
+    }
+}
+
+/* Animation for transitions */
+::deep .mud-fade-enter-active,
+::deep .mud-fade-exit-active {
+    transition: opacity 0.3s ease;
+}
+
+::deep .mud-fade-enter,
+::deep .mud-fade-exit-to {
+    opacity: 0;
+}

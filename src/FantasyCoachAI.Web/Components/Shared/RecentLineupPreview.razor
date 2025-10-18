@@ -1,0 +1,56 @@
+@using FantasyCoachAI.Application.DTOs
+
+<div class="lineup-preview">
+    @if (Lineup != null)
+    {
+        <MudPaper Elevation="0" Class="pa-3 mb-2" Style="background-color: var(--mud-palette-background-grey);">
+            <MudGrid Spacing="2">
+                <MudItem xs="6">
+                    <div class="text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.SportsSoccer" Color="Color.Primary" Class="mb-1" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Bramkarze</MudText>
+                        <MudText Typo="Typo.body2" Class="font-weight-bold">1</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="6">
+                    <div class="text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Shield" Color="Color.Info" Class="mb-1" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Obrońcy</MudText>
+                        <MudText Typo="Typo.body2" Class="font-weight-bold">4</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="6">
+                    <div class="text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.EmojiEvents" Color="Color.Warning" Class="mb-1" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Pomocnicy</MudText>
+                        <MudText Typo="Typo.body2" Class="font-weight-bold">4</MudText>
+                    </div>
+                </MudItem>
+                <MudItem xs="6">
+                    <div class="text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.LocalFireDepartment" Color="Color.Error" Class="mb-1" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Napastnicy</MudText>
+                        <MudText Typo="Typo.body2" Class="font-weight-bold">2</MudText>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+        <MudGrid Spacing="1" Class="mb-2">
+            <MudItem xs="6">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Koszt całkowity:</MudText>
+                <MudText Typo="Typo.body2" Class="font-weight-bold">30.0M</MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Dostępnie:</MudText>
+                <MudText Typo="Typo.body2" Class="font-weight-bold" Color="Color.Success">0.0M</MudText>
+            </MudItem>
+        </MudGrid>
+        <MudLinearProgress Value="100" Variant="LinearProgressVariant.Determinate" Color="Color.Success" Class="mb-1" />
+        <MudText Typo="Typo.caption" Color="Color.Secondary">Budżet wykorzystany w 100%</MudText>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public LineupDto? Lineup { get; set; }
+}

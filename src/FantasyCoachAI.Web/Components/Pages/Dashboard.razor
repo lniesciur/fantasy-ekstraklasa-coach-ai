@@ -1,0 +1,188 @@
+@page "/dashboard"
+@rendermode InteractiveServer
+@using FantasyCoachAI.Application.DTOs
+@using FantasyCoachAI.Application.Interfaces
+
+<PageTitle>Dashboard - Fantasy Coach AI</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-4">
+    <!-- Breadcrumb Navigation -->
+    <MudBreadcrumbs Items="breadcrumbs" Class="mb-4"></MudBreadcrumbs>
+
+    <!-- Page Header -->
+    <div class="dashboard-header mb-6">
+        <MudText Typo="Typo.h4" Class="font-weight-bold mb-2">Dashboard</MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary">Witaj! Tutaj możesz szybko wygenerować nowy skład lub przejrzeć poprzednie składy.</MudText>
+    </div>
+
+    <!-- Main Content -->
+    @if (isLoading)
+    {
+        <MudContainer Class="d-flex justify-center align-center" Style="height: 400px;">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </MudContainer>
+    }
+    else if (hasError)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">
+            @errorMessage
+        </MudAlert>
+    }
+    else
+    {
+        <MudGrid Spacing="3" Class="mb-6">
+            <!-- Current Lineup Card -->
+            <MudItem xs="12" sm="12" md="6">
+                <DashboardCard 
+                    Title="Mój Aktualny Skład"
+                    Icon="@Icons.Material.Filled.People"
+                    Class="h-100">
+                    @if (activeLineup != null)
+                    {
+                        <MudText Typo="Typo.body2" Class="mb-2">
+                            <strong>@activeLineup.Name</strong>
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-3">
+                            Kolejka: @activeLineup.GameweekId | Formacja: @activeLineup.Formation
+                        </MudText>
+                        <RecentLineupPreview Lineup="activeLineup" />
+                        <div class="mt-4">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" Size="Size.Small" Href="@($"/lineups/{activeLineup.Id}")">
+                                Edytuj Skład
+                            </MudButton>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="py-4">
+                            Brak aktywnego składu. Generuj nowy skład, aby zacząć!
+                        </MudText>
+                    }
+                </DashboardCard>
+            </MudItem>
+
+            <!-- Generate New Lineup Card -->
+            <MudItem xs="12" sm="12" md="6">
+                <DashboardCard 
+                    Title="Generuj Nowy Skład"
+                    Icon="@Icons.Material.Filled.AutoAwesome"
+                    Class="h-100 d-flex flex-column justify-center">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">
+                        Pozwól AI na wygenerowanie optymalnego składu dla kolejnej rundy.
+                    </MudText>
+                    <QuickActionButton 
+                        Text="Generuj Skład"
+                        Icon="@Icons.Material.Filled.AutoAwesome"
+                        Href="/lineups/generate"
+                        IsFullWidth="true" />
+                </DashboardCard>
+            </MudItem>
+        </MudGrid>
+
+        <!-- Recent Lineups History -->
+        <MudGrid Spacing="3">
+            <MudItem xs="12">
+                <DashboardCard 
+                    Title="Historia Składów"
+                    Icon="@Icons.Material.Filled.History"
+                    ShowDivider="true">
+                    @if (recentLineups != null && recentLineups.Count > 0)
+                    {
+                        <MudSimpleTable Striped="true" Dense="true" Class="mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Nazwa</th>
+                                    <th>Kolejka</th>
+                                    <th>Data Utworzenia</th>
+                                    <th>Formacja</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var lineup in recentLineups)
+                                {
+                                    <tr>
+                                        <td>@lineup.Name</td>
+                                        <td>@lineup.GameweekId</td>
+                                        <td>@lineup.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td>@lineup.Formation</td>
+                                        <td>
+                                            <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" OnClick="() => ViewLineup(lineup.Id)">
+                                                Podgląd
+                                            </MudButton>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </MudSimpleTable>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="py-4">
+                            Nie ma jeszcze żadnych składów w historii.
+                        </MudText>
+                    }
+                    <div class="mt-4">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" Href="/lineups">
+                            Pokaż Wszystkie Składy
+                        </MudButton>
+                    </div>
+                </DashboardCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private bool isLoading = true;
+    private bool hasError = false;
+    private string errorMessage = string.Empty;
+
+    private LineupDto? activeLineup;
+    private List<LineupResponseDto> recentLineups = new();
+    
+    private List<BreadcrumbItem> breadcrumbs = new();
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    private ILineupService LineupService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem("Dashboard", href: "/dashboard", disabled: true),
+            };
+
+            // Load data from service
+            try
+            {
+                activeLineup = await LineupService.GetActiveLineupAsync();
+                recentLineups = await LineupService.GetRecentLineupsAsync(3);
+            }
+            catch
+            {
+                // Gracefully handle service errors - show empty state
+                activeLineup = null;
+                recentLineups = new();
+            }
+
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            hasError = true;
+            errorMessage = $"Nie udało się załadować danych: {ex.Message}";
+            isLoading = false;
+        }
+    }
+
+    private void ViewLineup(int lineupId)
+    {
+        NavigationManager.NavigateTo($"/lineups/{lineupId}");
+    }
+}

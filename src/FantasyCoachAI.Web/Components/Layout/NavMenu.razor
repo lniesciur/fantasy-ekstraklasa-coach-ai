@@ -1,30 +1,87 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">FantasyCoachAI.Web</a>
+﻿<div class="nav-container">
+    <div class="nav-header">
+        <div class="logo-section">
+            <span class="logo-icon">🎯</span>
+            <div class="logo-text">
+                <h1>AI Coach</h1>
+            </div>
+        </div>
     </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <div class="nav-scrollable">
+        <!-- ANALIZA Section -->
+        <div class="nav-section">
+            <h2 class="nav-section-title">ANALIZA</h2>
+            <nav class="flex-column">
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/dashboard" Match="NavLinkMatch.All">
+                        <i class="nav-icon bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </NavLink>
+                </div>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/lineups">
+                        <i class="nav-icon bi bi-collection-play"></i>
+                        <span>Moje składy</span>
+                        <span class="nav-badge">3</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/generate">
+                        <i class="nav-icon bi bi-stars"></i>
+                        <span>Generuj skład</span>
+                    </NavLink>
+                </div>
+            </nav>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+        <!-- KONFIGURACJA Section -->
+        <div class="nav-section">
+            <h2 class="nav-section-title">KONFIGURACJA</h2>
+            <nav class="flex-column">
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/players">
+                        <i class="nav-icon bi bi-people-fill"></i>
+                        <span>Zawodnicy</span>
+                        <span class="nav-badge">24</span>
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/teams">
+                        <i class="nav-icon bi bi-shield-fill"></i>
+                        <span>Zespoły</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/gameweeks">
+                        <i class="nav-icon bi bi-calendar2-event"></i>
+                        <span>Terminarz</span>
+                        <span class="nav-badge">5</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item">
+                    <NavLink class="nav-link" href="/statistics">
+                        <i class="nav-icon bi bi-graph-up"></i>
+                        <span>Statystyki</span>
+                    </NavLink>
+                </div>
+            </nav>
         </div>
-    </nav>
+    </div>
+
+    <div class="nav-footer">
+        <div class="user-profile">
+            <span class="user-avatar">JK</span>
+            <div class="user-info">
+                <p class="user-name">Jan Kowalski</p>
+                <p class="user-role">Admin</p>
+            </div>
+        </div>
+    </div>
 </div>
 

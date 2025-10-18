@@ -24,19 +24,15 @@ Struktura stosuje hierarchię: Layout główny → Strony (Pages) → Komponenty
 **Główny cel:** Zaprezentowanie przeglądu systemu, szybkiego dostępu do kluczowych funkcji oraz aktualnych statystyk użytkownika.
 
 **Kluczowe informacje do wyświetlenia:**
-- Karta "Mój aktualny skład" - wyświetlanie aktywnego składu z krótkim podglądem (formacja, budżet, liczba graczy)
-- Karta "Statystyki zawodników" - top 5 zawodników z najwyższą formą lub punktami
-- Karta "Nadchodzące mecze" - przegląd meczów z kolejnego gameweeka
+- Karta "Mój aktualny skład" - wyświetlanie aktywnego składu z krótkim podglądem (prosta lista z formacjami)
 - Karta "Historia składów" - ostatnie 3 wygenerowane składy z datą i wynikami
 - Przycisk akcji "Generuj nowy skład"
-- Przycisk akcji "Przeglądaj zawodników"
 
 **Kluczowe komponenty widoku:**
 - `DashboardCard` - reusable component do wyświetlania karti z ikonami i informacjami
 - `QuickActionButton` - przyciski szybkich akcji
 - `RecentLineupPreview` - miniaturowy widok ostatnich składów
-- `PlayerFormGrid` - mała tabelka top zawodników
-- `UpcomingMatchesList` - lista nadchodzących meczów
+
 
 **UX, dostępność i względy bezpieczeństwa:**
 - Responsywny grid: 2 kolumny na desktop, 1 kolumna na mobile

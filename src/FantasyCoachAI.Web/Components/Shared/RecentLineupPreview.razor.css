@@ -1,0 +1,35 @@
+/* Lineup Preview Container */
+.lineup-preview {
+    width: 100%;
+}
+
+/* Preview Grid */
+:deep .mud-grid {
+    gap: 0.5rem;
+}
+
+:deep .mud-item {
+    padding: 0.5rem !important;
+}
+
+/* Preview Paper */
+:deep .mud-paper {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+    border-radius: 8px;
+}
+
+/* Center text utility */
+.text-center {
+    text-align: center;
+}
+
+/* Icon styling */
+:deep .mud-icon-root {
+    margin-bottom: 0.25rem;
+}
+
+/* Linear progress */
+:deep .mud-linear-progress {
+    border-radius: 4px;
+    height: 6px;
+}
